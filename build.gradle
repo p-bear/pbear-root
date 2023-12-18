@@ -1,0 +1,17 @@
+group = 'org.pbear'
+
+subprojects {
+    apply plugin: 'java'
+    apply plugin: 'java-libary'
+
+    sourceCompatibility = 17
+
+    dependencies {
+        compileOnly 'org.projectlombok:lombok:1.18.28'
+        annotationProcessor 'org.projectlombok:lombok:1.18.28'
+    }
+
+    repositories {
+        mavenCentral()
+    }
+}
