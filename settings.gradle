@@ -1,2 +1,5 @@
 rootProject.name = 'pbear-root'
 
+include 'pbear-spring'
+include 'pbear-spring:pbear-lib'
+include 'pbear-spring:pbear-sample'

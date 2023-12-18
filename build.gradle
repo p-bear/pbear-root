@@ -1,8 +1,8 @@
-group = 'org.pbear'
+group = 'com.pbear'
 
 subprojects {
     apply plugin: 'java'
-    apply plugin: 'java-libary'
+    apply plugin: 'java-library'
 
     sourceCompatibility = 17
 
