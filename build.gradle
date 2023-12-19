@@ -1,10 +1,27 @@
+import org.yaml.snakeyaml.Yaml
+
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath('org.yaml:snakeyaml:2.0')
+    }
+}
+
+plugins {
+    id 'com.bmuschko.docker-spring-boot-application' version '9.4.0'
+}
+
 group = 'com.pbear'
 
 subprojects {
     apply plugin: 'java'
     apply plugin: 'java-library'
+    apply plugin: 'com.bmuschko.docker-spring-boot-application'
 
     sourceCompatibility = 17
+    targetCompatibility = 17
 
     dependencies {
         compileOnly 'org.projectlombok:lombok:1.18.28'
@@ -13,5 +30,18 @@ subprojects {
 
     repositories {
         mavenCentral()
+    }
+
+    docker {
+        dockerCreateDockerfile.doFirst {
+            def appConfig = new Yaml().load( project.file('src/main/resources/application.yml').newInputStream() )
+            springBootApplication {
+                baseImage = 'openjdk:17'
+                ports = [appConfig.server.port, appConfig.server.port]
+                images = ["${project.name}:${project.version}", "${project.name}:latest"]
+                jvmArgs = ['-Dspring.profiles.active=release', '-Duser.timezone=Asia/Seoul']
+            }
+        }
+        dockerBuildImage.dependsOn('build')
     }
 }
