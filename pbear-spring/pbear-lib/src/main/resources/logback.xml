@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
-    <property name="APP_NAME" value="pbear-sample"/>
+    <springProperty name="APP_NAME" source="spring.application.name"/>
 
     <springProfile name="local">
         <property name="FILE_PATH" value="/users/friendship41/workspace/logs"/>
