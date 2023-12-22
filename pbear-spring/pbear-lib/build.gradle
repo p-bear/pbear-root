@@ -4,7 +4,8 @@ bootJar { enabled = false }
 
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter'
+}
 
-    compileOnly project(':pbear-spring:pbear-devtool')
-    annotationProcessor project(':pbear-spring:pbear-devtool')
+tasks.named('compileJava') {
+    it.dependsOn('clean')
 }
