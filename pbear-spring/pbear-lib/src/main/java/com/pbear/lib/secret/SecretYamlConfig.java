@@ -17,7 +17,6 @@ public class SecretYamlConfig {
   @Bean
   @ConditionalOnResource(resources = "classpath:application-secret.yml")
   public YamlPropertiesFactoryBean yamlPropertiesFactoryBean() {
-    log.info("qwerasdf");
     YamlPropertiesFactoryBean bean = new YamlPropertiesFactoryBean();
     bean.setResources(new ClassPathResource("application-secret.yml"));
     return bean;

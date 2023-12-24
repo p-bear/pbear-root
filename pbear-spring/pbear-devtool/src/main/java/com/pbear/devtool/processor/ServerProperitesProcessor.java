@@ -1,7 +1,7 @@
 package com.pbear.devtool.processor;
 
 import com.google.auto.service.AutoService;
-import com.pbear.devtool.annotation.EnablePBearDevtool;
+import com.pbear.devtool.annotation.EnablePBearServerInfoDevtool;
 import org.yaml.snakeyaml.Yaml;
 
 import javax.annotation.processing.AbstractProcessor;
@@ -36,7 +36,7 @@ import java.util.stream.Stream;
  *  - https://github.com/taes-k/sample-annotation-processing
  *  - https://www.baeldung.com/java-annotation-processing-builder
  */
-@SupportedAnnotationTypes("com.pbear.devtool.annotation.EnablePBearDevtool")
+@SupportedAnnotationTypes("com.pbear.devtool.annotation.EnablePBearServerInfoDevtool")
 @SupportedSourceVersion(SourceVersion.RELEASE_17)
 @AutoService(Processor.class)
 @SuppressWarnings({"unused"})
@@ -46,7 +46,7 @@ public class ServerProperitesProcessor extends AbstractProcessor {
 
   @Override
   public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
-    roundEnv.getElementsAnnotatedWith(EnablePBearDevtool.class)
+    roundEnv.getElementsAnnotatedWith(EnablePBearServerInfoDevtool.class)
         .stream()
         .filter(element -> element.getKind() == ElementKind.CLASS)
         .findFirst()
