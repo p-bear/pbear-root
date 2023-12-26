@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Properties;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -43,6 +42,7 @@ import java.util.stream.Stream;
 public class ServerProperitesProcessor extends AbstractProcessor {
   private static final String SERVER_ENUM_PACKAGE_NAME = "com.pbear.devtool";
   private static final String SERVER_ENUM_CLASS_NAME = "Server";
+  private static final String TAB = "  ";
 
   @Override
   public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
@@ -115,7 +115,7 @@ public class ServerProperitesProcessor extends AbstractProcessor {
         .map(yamlMap -> {
           try {
             String appName = String.valueOf(this.getValue(yamlMap, "spring", "application", "name").orElseThrow());
-            Integer port = (Integer) this.getValue(yamlMap, "server", "port").orElseThrow();
+            String port = String.valueOf(this.getValue(yamlMap, "server", "port").orElseThrow());
             return new ServerInfo(appName, port);
           } catch (Exception e) {
             return null;
@@ -156,13 +156,16 @@ public class ServerProperitesProcessor extends AbstractProcessor {
         .getFiler()
         .createSourceFile(SERVER_ENUM_PACKAGE_NAME + "." + SERVER_ENUM_CLASS_NAME);
     try (PrintWriter out = new PrintWriter(fileObject.openWriter())) {
-      String tab = "  ";
-
       // package com.pbear.devtool;
       out.print("package ");
       out.print(SERVER_ENUM_PACKAGE_NAME);
       out.println(";");
       out.println();
+
+      // import ...
+      out.println("import java.util.Arrays;");
+      out.println("import java.util.Map;");
+      out.println("import java.util.stream.Collectors;");
 
       // public enum Server {
       out.print("public enum ");
@@ -174,15 +177,16 @@ public class ServerProperitesProcessor extends AbstractProcessor {
         String enumVarName = serverInfo.applicationName
             .replaceAll("-", "_")
             .replaceAll(" ", "_")
-            .replaceAll("\\.", "_");
+            .replaceAll("\\.", "_")
+            .toUpperCase();
 
         // SERVER_NAME("applicationName", port)
-        out.print(tab + enumVarName);
+        out.print(TAB + enumVarName);
         out.print("(\"");
         out.print(serverInfo.applicationName);
-        out.print("\", ");
-        out.print(serverInfo.port);
-        out.print(")");
+        out.print("\", \"");
+        out.print(serverInfo.restPort);
+        out.print("\")");
         if (i == serverInfoList.size() -1) {
           out.println(";");
         } else {
@@ -191,28 +195,64 @@ public class ServerProperitesProcessor extends AbstractProcessor {
       }
       out.println();
 
-      // member variables
-      out.println(tab + "private final String name;");
-      out.println(tab + "private final Integer port;");
-      out.println();
+      this.printStaticEnumGetter(out);
 
-      // constructor
-      out.println(tab + "Server(final String name, final int port) {");
-      out.println(tab + tab + "this.name = name;");
-      out.println(tab + tab + "this.port = port;");
-      out.println(tab + "}");
-      out.println();
-
-      // getters
-      out.println(tab + "public String getName() {");
-      out.println(tab + tab + "return this.name;");
-      out.println(tab + "}");
-      out.println();
-      out.println(tab + "public int getPort() {");
-      out.println(tab + tab + "return this.port;");
-      out.println(tab + "}");
+      this.printEnumBodyCode(out, "applicationName", "restPort");
 
       out.println("}");
+    }
+  }
+
+  private void printStaticEnumGetter(final PrintWriter out) {
+    out.println(TAB + "private static final Map<String, Server> ENUM_MAP = " +
+        "Arrays.stream(Server.values()).collect(Collectors.toUnmodifiableMap(Server::getApplicationName, e -> e));");
+    out.println();
+    out.println(TAB + "public static Server from(String applicationName) {");
+    out.println(TAB + TAB + "return ENUM_MAP.get(applicationName);");
+    out.println(TAB + "}");
+    out.println();
+  }
+
+  private void printEnumBodyCode(final PrintWriter out, final String... args) {
+    // member variables
+    this.printMemberVariables(out, args);
+
+    // constructor
+    this.printConstructor(out, args);
+
+    // getters
+    this.printGetters(out, args);
+  }
+
+  private void printMemberVariables(final PrintWriter out, final String... args) {
+    for (String arg : args) {
+      out.println(TAB + "private final String " + arg + ";");
+    }
+    out.println();
+  }
+
+  private void printConstructor(final PrintWriter out, final String... args) {
+    out.print(TAB + "Server(");
+    for (int i=0; i<args.length; i++) {
+      if (i != 0) {
+        out.print(", ");
+      }
+      out.print("final String " + args[i]);
+    }
+    out.println(") {");
+    for (String arg : args) {
+      out.println(TAB + TAB + "this." + arg + " = " + arg + ";");
+    }
+    out.println(TAB + "}");
+    out.println();
+  }
+
+  private void printGetters(final PrintWriter out, final String... args) {
+    for (String arg : args) {
+      out.println(TAB + "public String get" + arg.substring(0, 1).toUpperCase() + arg.substring(1) + "() {");
+      out.println(TAB + TAB + "return this." + arg + ";");
+      out.println(TAB + "}");
+      out.println();
     }
   }
 
@@ -232,14 +272,7 @@ public class ServerProperitesProcessor extends AbstractProcessor {
 //    }
 //  }
 
-  record ServerInfo(String applicationName, Integer port) {
-    public Properties toProperties() {
-      Properties properties = new Properties();
-      properties.put(this.applicationName + ".port", this.port.toString());
-
-      return properties;
-    }
-
+  record ServerInfo(String applicationName, String restPort) {
     @Override
     public boolean equals(final Object o) {
       if (o == null) {
