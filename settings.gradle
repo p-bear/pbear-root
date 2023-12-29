@@ -3,4 +3,6 @@ rootProject.name = 'pbear-root'
 include 'pbear-spring'
 include 'pbear-spring:pbear-lib'
 include 'pbear-spring:pbear-devtool'
+include 'pbear-spring:pbear-starter-r2dbc'
+
 include 'pbear-spring:pbear-sample'

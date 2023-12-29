@@ -5,3 +5,5 @@ spring:
     active: local
   application:
     name: pbear-sample
+r2dbc:
+  database: test
