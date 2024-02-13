@@ -1,0 +1,10 @@
+version = '0.0.2'
+
+bootJar {
+    enabled = false
+}
+
+dependencies {
+    api 'org.springframework.boot:spring-boot-starter-webflux'
+    api 'org.springframework.cloud:spring-cloud-starter-zookeeper-discovery'
+}

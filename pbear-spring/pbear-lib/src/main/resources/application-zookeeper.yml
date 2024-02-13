@@ -1,0 +1,6 @@
+spring:
+  cloud:
+    zookeeper:
+      discovery:
+        enabled: true
+        prefer-ip-address: true

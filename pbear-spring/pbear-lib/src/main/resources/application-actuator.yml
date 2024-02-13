@@ -1,4 +1,11 @@
 management:
+  tracing:
+    sampling:
+      probability: 1.0
+    propagation:
+      consume: b3
+      produce: b3_multi
+    enabled: true
   endpoints:
     web:
       exposure:

@@ -1,3 +1,4 @@
 org.springframework.boot.env.EnvironmentPostProcessor=\
 com.pbear.lib.properties.ActuatorPropertiesApplier,\
-com.pbear.lib.properties.SecretPropertiesApplier
+com.pbear.lib.properties.SecretPropertiesApplier,\
+com.pbear.lib.properties.ZookeeperPropertiesApplier

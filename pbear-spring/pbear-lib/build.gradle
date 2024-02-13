@@ -1,10 +1,12 @@
-version = '0.0.5'
+version = '0.0.6'
 
 bootJar { enabled = false }
 
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter'
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation 'io.micrometer:micrometer-tracing-bridge-brave'
+//    implementation 'io.zipkin.reporter2:zipkin-reporter-brave'
     implementation 'io.micrometer:micrometer-registry-prometheus'
     implementation 'io.netty:netty-resolver-dns-native-macos:4.1.70.Final:osx-aarch_64'
 }

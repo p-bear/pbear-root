@@ -27,12 +27,14 @@ subprojects {
         compileOnly 'org.projectlombok:lombok:1.18.28'
         annotationProcessor 'org.projectlombok:lombok:1.18.28'
 
-        if (project.name != 'pbear-devtool') {
-            compileOnly project(':pbear-spring:pbear-devtool')
-            annotationProcessor project(':pbear-spring:pbear-devtool')
+        if (project.name != 'pbear-spring') {
+            if (project.name != 'pbear-devtool') {
+                compileOnly project(':pbear-spring:pbear-devtool')
+                annotationProcessor project(':pbear-spring:pbear-devtool')
 
-            if (project.name != 'pbear-lib') {
-                implementation project(':pbear-spring:pbear-lib')
+                if (project.name != 'pbear-lib') {
+                    implementation project(':pbear-spring:pbear-lib')
+                }
             }
         }
     }

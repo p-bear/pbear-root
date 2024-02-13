@@ -2,7 +2,6 @@ package com.pbear.lib.properties;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.env.EnvironmentPostProcessor;
-import org.springframework.boot.env.OriginTrackedMapPropertySource;
 import org.springframework.boot.env.YamlPropertySourceLoader;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.PropertySource;
@@ -32,7 +31,7 @@ interface PropertiesApplier extends EnvironmentPostProcessor {
     if (secretPropertySources == null || secretPropertySources.isEmpty()) {
       throw new IOException("fail to find " + fileName);
     }
-    System.out.println(((OriginTrackedMapPropertySource) secretPropertySources.get(0)).getSource());
+//    System.out.println(((OriginTrackedMapPropertySource) secretPropertySources.get(0)).getSource());
     return secretPropertySources.get(0);
   }
 }
