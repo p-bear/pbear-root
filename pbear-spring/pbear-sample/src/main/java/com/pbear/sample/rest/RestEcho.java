@@ -9,7 +9,6 @@ import org.springframework.web.reactive.function.server.RouterFunctions;
 import org.springframework.web.reactive.function.server.ServerResponse;
 
 @Configuration
-@EnableR2dbcRepositories
 @Slf4j
 public class RestEcho {
   @Bean

@@ -115,8 +115,8 @@ public class ServerProperitesProcessor extends AbstractProcessor {
         .map(yamlMap -> {
           try {
             String appName = String.valueOf(this.getValue(yamlMap, "spring", "application", "name").orElseThrow());
-            String port = String.valueOf(this.getValue(yamlMap, "server", "port").orElseThrow());
-            return new ServerInfo(appName, port);
+            String basePath = String.valueOf(this.getValue(yamlMap, "spring", "webflux", "base-path").orElse("/"));
+            return new ServerInfo(appName, basePath);
           } catch (Exception e) {
             return null;
           }
@@ -180,12 +180,12 @@ public class ServerProperitesProcessor extends AbstractProcessor {
             .replaceAll("\\.", "_")
             .toUpperCase();
 
-        // SERVER_NAME("applicationName", port)
+        // SERVER_NAME("applicationName", "basePath")
         out.print(TAB + enumVarName);
         out.print("(\"");
         out.print(serverInfo.applicationName);
         out.print("\", \"");
-        out.print(serverInfo.restPort);
+        out.print(serverInfo.basePath);
         out.print("\")");
         if (i == serverInfoList.size() -1) {
           out.println(";");
@@ -197,7 +197,7 @@ public class ServerProperitesProcessor extends AbstractProcessor {
 
       this.printStaticEnumGetter(out);
 
-      this.printEnumBodyCode(out, "applicationName", "restPort");
+      this.printEnumBodyCode(out, "applicationName", "basePath");
 
       out.println("}");
     }
@@ -272,7 +272,7 @@ public class ServerProperitesProcessor extends AbstractProcessor {
 //    }
 //  }
 
-  record ServerInfo(String applicationName, String restPort) {
+  record ServerInfo(String applicationName, String basePath) {
     @Override
     public boolean equals(final Object o) {
       if (o == null) {

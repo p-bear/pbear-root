@@ -1,0 +1,6 @@
+version = '0.0.1'
+
+dependencies {
+    implementation project(':pbear-spring:pbear-starter-r2dbc')
+    implementation project(':pbear-spring:pbear-starter-webflux')
+}

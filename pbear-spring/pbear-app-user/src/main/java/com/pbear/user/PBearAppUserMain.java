@@ -1,4 +1,4 @@
-package com.pbear.sample;
+package com.pbear.user;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -7,9 +7,9 @@ import reactor.core.publisher.Hooks;
 
 @SpringBootApplication
 @EnableR2dbcRepositories
-public class PBearSampleMain {
+public class PBearAppUserMain {
   public static void main(String[] args) {
     Hooks.enableAutomaticContextPropagation();
-    SpringApplication.run(PBearSampleMain.class, args);
+    SpringApplication.run(PBearAppUserMain.class, args);
   }
 }

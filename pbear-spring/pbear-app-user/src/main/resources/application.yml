@@ -1,0 +1,11 @@
+server:
+  port: 40001
+spring:
+  profiles:
+    active: local
+  application:
+    name: pbear-app-user
+  webflux:
+    base-path: /users
+r2dbc:
+  database: pbear_user
