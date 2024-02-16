@@ -1,0 +1,7 @@
+server:
+  port: 40010
+spring:
+  profiles:
+    active: local
+  application:
+    name: pbear-app-oauth
