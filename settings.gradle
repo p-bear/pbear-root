@@ -4,6 +4,7 @@ include 'pbear-spring'
 include 'pbear-spring:pbear-lib'
 include 'pbear-spring:pbear-devtool'
 
+include 'pbear-spring:pbear-app-oauth'
 include 'pbear-spring:pbear-app-user'
 
 include 'pbear-spring:pbear-starter-r2dbc'

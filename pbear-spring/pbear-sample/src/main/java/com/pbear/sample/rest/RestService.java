@@ -2,6 +2,7 @@ package com.pbear.sample.rest;
 
 import com.pbear.devtool.Server;
 import com.pbear.sample.r2dbc.DevService;
+import com.pbear.starter.webflux.data.dto.CommonRestResponse;
 import com.pbear.starter.webflux.DiscoveryService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -14,6 +15,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import reactor.core.publisher.Mono;
 
 import java.util.HashMap;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -26,7 +28,9 @@ public class RestService {
   public Mono<ServerResponse> echo(final ServerRequest serverRequest) {
     return Mono.just(serverRequest.path())
         .doOnNext(path -> log.info("req path: {}", path))
-        .then(ServerResponse.ok().build());
+        .then(ServerResponse.ok().bodyValue(CommonRestResponse.builder()
+            .data(Map.of("isGood", true))
+            .build()));
   }
 
   public Mono<ServerResponse> db(final ServerRequest serverRequest) {

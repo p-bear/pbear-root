@@ -24,9 +24,6 @@ subprojects {
     targetCompatibility = 17
 
     dependencies {
-        compileOnly 'org.projectlombok:lombok:1.18.28'
-        annotationProcessor 'org.projectlombok:lombok:1.18.28'
-
         if (project.name != 'pbear-spring') {
             if (project.name != 'pbear-devtool') {
                 compileOnly project(':pbear-spring:pbear-devtool')
@@ -37,6 +34,12 @@ subprojects {
                 }
             }
         }
+
+        compileOnly 'org.projectlombok:lombok:1.18.28'
+        annotationProcessor 'org.projectlombok:lombok:1.18.28'
+
+        implementation 'org.mapstruct:mapstruct:1.5.5.Final'
+        annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.5.Final'
     }
 
     repositories {
