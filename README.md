@@ -31,15 +31,11 @@
 ### One Source Multi-Build
 
 #### 목적
-```
-프로젝트마다 중복되는 코드와 작업들을 최소화 
-// Project Structure 참고
-```
+- 프로젝트마다 중복되는 코드와 작업들을 최소화 // Project Structure 참고
 
 #### HOW-TO
-```
-Gradle의 Multi-Project 구조 구성
-```
+- Gradle의 Multi-Project 구조 구성
+
 1. **Gradle Plugin으로 Docker Image Build를 Root에 구성**하여, 하위 프로젝트에게 자동으로 적용. 이를 통해 Jenkins Pipeline의 parameter만 변경하여 신규 프로젝트를 빌드할 수 있도록 구성
 2. **AnnotationProcessor를 통해 자동생성 된 Server Enum**으로 service discovery 간소화
 3. **EnvironmentPostProcessor로 ClassPath의 모든 Yaml 설정을 import**하여 공통으로 쓰이는 Server Properties를 공통으로 사용
@@ -48,23 +44,21 @@ Gradle의 Multi-Project 구조 구성
 ### Auto Service Discovery
 
 #### 목적
-```
-MSA 구조에서 각 Service의 Runtime 접속정보를 실시간으로 Discover 하기 위함
-```
+- MSA 구조에서 각 Service의 Runtime 접속정보를 실시간으로 Discover 하기 위함
+
 
 #### HOW-TO
-```
+
 1. Zookeeper Client를 통해 Service의 Runtime 접속정보를 자동 등록
 2. **AnnotationProcessor를 통해 자동생성 된 Server Enum**으로 service Targeting
 3. 각 서버의 rest endpoint prefix를 구성할 수 있도록 함
-```
+
 
 ### Gateway with Passport (작업중)
 
 #### 목적
-```
-Authentication Context를 Gateway에서 통합 처리하여 각 Service에게 제공
-```
+- Authentication Context를 Gateway에서 통합 처리하여 각 Service에게 제공
+
 
 #### HOW-TO
 1. Authentication은 별도의 OAuth Server에서 담당 
