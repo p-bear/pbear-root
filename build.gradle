@@ -53,7 +53,7 @@ subprojects {
                 baseImage = 'openjdk:17'
                 ports = [appConfig.server.port, appConfig.server.port]
                 images = ["${project.name}:${project.version}", "${project.name}:latest"]
-                jvmArgs = ['-Dspring.profiles.active=release', '-Duser.timezone=Asia/Seoul']
+                jvmArgs = ['-Dspring.profiles.active=release', '-Duser.timezone=Asia/Seoul', '-Xms512m', '-Xmx512m']
             }
         }
         dockerBuildImage.dependsOn('build')

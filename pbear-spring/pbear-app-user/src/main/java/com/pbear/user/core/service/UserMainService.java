@@ -37,6 +37,7 @@ public class UserMainService {
 
   public Mono<Boolean> isPasswordMatches(final String mainId, final String rawPassword) {
     return this.userInfoRepository.findUserInfoByMainId(mainId)
-        .map(userInfo -> this.passwordEncoder.matches(rawPassword, userInfo.getPassword()));
+        .map(userInfo -> this.passwordEncoder.matches(rawPassword, userInfo.getPassword()))
+        .defaultIfEmpty(false);
   }
 }
