@@ -5,31 +5,6 @@ spring:
     active: local
   application:
     name: pbear-app-oauth
-  security:
-    oauth2:
-      authorizationserver:
-        client:
-          messaging-client:
-            registration:
-              client-id: "common-client"
-              client-secret: "{noop}secret"
-              client-authentication-methods:
-                - "client_secret_basic"
-              authorization-grant-types:
-                - "authorization_code"
-                - "refresh_token"
-                - "client_credentials"
-              redirect-uris:
-                - "http://127.0.0.1:40010/login/oauth2/code/messaging-client-oidc"
-                - "http://127.0.0.1:40010/authorized"
-                - "http://127.0.0.1:40010/test"
-              post-logout-redirect-uris:
-                - "http://127.0.0.1:40010/logged-out"
-              scopes:
-                - "openid"
-                - "profile"
-                - "user.read"
-                - "user.write"
 
 #logging:
 #  level:

@@ -6,12 +6,9 @@ import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.oauth2.server.authorization.authentication.OAuth2ClientAuthenticationToken;
 import org.springframework.stereotype.Component;
-
-import java.util.Set;
 
 @Component
 @RequiredArgsConstructor
@@ -31,10 +28,11 @@ public class PbearAuthenticationProvider implements AuthenticationProvider {
         String.valueOf(targetAuth.getCredentials()))) {
       throw new UsernameNotFoundException(authentication.getPrincipal().toString());
     }
+
     return new UsernamePasswordAuthenticationToken(
         authentication.getPrincipal(),
         null,
-        Set.of(new SimpleGrantedAuthority("USER"))
+        targetAuth.getAuthorities()
     );
   }
 
