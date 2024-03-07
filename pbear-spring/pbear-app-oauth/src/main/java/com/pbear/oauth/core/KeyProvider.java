@@ -1,4 +1,4 @@
-package com.pbear.oauth.impl;
+package com.pbear.oauth.core;
 
 import jakarta.annotation.PostConstruct;
 import lombok.Getter;

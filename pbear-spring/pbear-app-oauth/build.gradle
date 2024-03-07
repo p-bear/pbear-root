@@ -1,7 +1,6 @@
-version = '0.0.3'
+version = '0.0.4'
 
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-authorization-server'
-
     implementation 'org.springframework.cloud:spring-cloud-starter-zookeeper-discovery'
 }

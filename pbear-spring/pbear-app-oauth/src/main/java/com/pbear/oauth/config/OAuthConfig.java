@@ -1,11 +1,14 @@
 package com.pbear.oauth.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
-import com.pbear.oauth.impl.TokenCustomizer;
-import com.pbear.oauth.impl.KeyProvider;
+import com.pbear.oauth.core.TokenCustomizer;
+import com.pbear.oauth.core.KeyProvider;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
@@ -39,14 +42,15 @@ import java.util.UUID;
 
 @Configuration
 public class OAuthConfig {
+  private static final String DEFAULT_OAUTH_KEY_ID = "PBEAR_DEFAULT_OAUTH_KEY";
 
   @Bean
   @Order(Ordered.HIGHEST_PRECEDENCE)
-  public SecurityFilterChain authorizationServerSecurityFilterChain(HttpSecurity http) throws Exception {
+  public SecurityFilterChain authorizationServerSecurityFilterChain(final HttpSecurity http) throws Exception {
     OAuth2AuthorizationServerConfiguration.applyDefaultSecurity(http);
 
     http.getConfigurer(OAuth2AuthorizationServerConfigurer.class)
-        .oidc(Customizer.withDefaults());	// Enable OpenID Connect 1.0
+        .oidc(Customizer.withDefaults());
 
     http
         .exceptionHandling((exceptions) -> exceptions
@@ -107,14 +111,20 @@ public class OAuthConfig {
     RSAPrivateKey privateKey = (RSAPrivateKey) keyPair.getPrivate();
     RSAKey rsaKey = new RSAKey.Builder(publicKey)
         .privateKey(privateKey)
-        .keyID(UUID.randomUUID().toString())
+        .keyID(DEFAULT_OAUTH_KEY_ID)
         .build();
     JWKSet jwkSet = new JWKSet(rsaKey);
     return (jwkSelector, securityContext) -> jwkSelector.select(jwkSet);
   }
 
   @Bean
-  public JwtDecoder jwtDecoder(JWKSource<SecurityContext> jwkSource) {
+  public JwtDecoder jwtDecoder(final JWKSource<SecurityContext> jwkSource) {
     return OAuth2AuthorizationServerConfiguration.jwtDecoder(jwkSource);
+  }
+
+  @Bean
+  @Qualifier("customOM")
+  public ObjectMapper objectMapper() {
+    return new ObjectMapper().registerModule(new JavaTimeModule());
   }
 }

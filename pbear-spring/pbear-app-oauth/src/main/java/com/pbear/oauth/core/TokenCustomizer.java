@@ -1,4 +1,4 @@
-package com.pbear.oauth.impl;
+package com.pbear.oauth.core;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.core.oidc.IdTokenClaimNames;
