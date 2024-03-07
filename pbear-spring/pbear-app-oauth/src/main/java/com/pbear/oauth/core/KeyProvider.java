@@ -43,7 +43,8 @@ public class KeyProvider {
     // extract keyData to byte[]
     byte[] keyData = Base64.getDecoder().decode(stringBuilder.toString()
         .replace("-----BEGIN PRIVATE KEY-----", "")
-        .replaceAll(System.lineSeparator(), "")
+        .replaceAll("\\r", "")
+        .replaceAll("\\n", "")
         .replace("-----END PRIVATE KEY-----", ""));
 
     // load public, private key

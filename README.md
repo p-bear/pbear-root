@@ -20,6 +20,8 @@
 - JDK 17
 - Spring Boot 3.2.2
 - Spring Webflux
+- Spring Cloud Gateway
+- Spring Authorization Server
 - auto-service *(AnnotationProcessor Support)*
 - R2DBC
 - Reactor-Kafka

@@ -13,10 +13,10 @@ import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
-public class UserController {
+public class PassportController {
   private final ObjectMapper objectMapper;
 
-  @GetMapping("/oauth2/user")
+  @GetMapping("/passport")
   public Object getUserInfo() throws JsonProcessingException {
     String authName = SecurityContextHolder.getContext().getAuthentication().getName();
     return Map.of(
