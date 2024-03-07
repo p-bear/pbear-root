@@ -1,0 +1,12 @@
+server:
+  port: 40000
+spring:
+  profiles:
+    active: local
+  application:
+    name: pbear-app-gateway
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
