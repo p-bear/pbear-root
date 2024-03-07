@@ -2,3 +2,4 @@ com.pbear.starter.webflux.WebClientConfig
 com.pbear.starter.webflux.DiscoveryService
 com.pbear.starter.webflux.GlobalRestErrorAttributes
 com.pbear.starter.webflux.GlobalRestErrorWebExceptionHandler
+com.pbear.starter.webflux.JacksonConfig
