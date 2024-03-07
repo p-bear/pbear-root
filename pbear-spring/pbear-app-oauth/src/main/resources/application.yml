@@ -6,6 +6,6 @@ spring:
   application:
     name: pbear-app-oauth
 
-#logging:
-#  level:
-#    org.springframework.security: trace
+logging:
+  level:
+    org.springframework.security: DEBUG
