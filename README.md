@@ -56,7 +56,7 @@
 3. 각 서버의 rest endpoint prefix를 구성할 수 있도록 함
 
 
-### Gateway with Passport (작업중)
+### API Gateway with Passport
 
 #### 목적
 - Authentication Context를 Gateway에서 통합 처리하여 각 Service에게 제공
@@ -67,6 +67,7 @@
 2. OAuth Server는 토큰을 검증 및 passport(Autentication Context)를 제공하는 기능 구현
 3. Gateway는 Request의 AccessToken이 있으면 OAuth Server로 Passport를 받아서 Forwarding
 4. Authorization은 각 Service에서 담당
+5. 기본적으로 API Gateway는 Zookeeper와 연동하여 discovery된 Server로 포워딩
 
 #### Constraint
 - 확장성을 위해 Autorization을 각 Service가 책임지며, 공통 인증/인가가 불가
@@ -78,6 +79,7 @@
 ```
 pbear-root
 ├──pbear-spring
+│   ├──pbear-app-gateway        # API Gateway Server Application
 │   ├──pbear-app-oauth          # OAuth Server Application
 │   ├──pbear-app-user           # User Server Application
 │   ... (to be continue)
