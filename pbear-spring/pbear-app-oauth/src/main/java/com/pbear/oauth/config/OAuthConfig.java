@@ -6,8 +6,10 @@ import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
-import com.pbear.oauth.core.TokenCustomizer;
 import com.pbear.oauth.core.KeyProvider;
+import com.pbear.oauth.core.RedirectService;
+import com.pbear.oauth.core.TokenCustomizer;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -41,12 +43,14 @@ import java.time.temporal.ChronoUnit;
 import java.util.UUID;
 
 @Configuration
+@Slf4j
 public class OAuthConfig {
   private static final String DEFAULT_OAUTH_KEY_ID = "PBEAR_DEFAULT_OAUTH_KEY";
 
   @Bean
   @Order(Ordered.HIGHEST_PRECEDENCE)
-  public SecurityFilterChain authorizationServerSecurityFilterChain(final HttpSecurity http) throws Exception {
+  public SecurityFilterChain authorizationServerSecurityFilterChain(final HttpSecurity http,
+                                                                    final RedirectService redirectService) throws Exception {
     OAuth2AuthorizationServerConfiguration.applyDefaultSecurity(http);
 
     http.getConfigurer(OAuth2AuthorizationServerConfigurer.class)
@@ -55,7 +59,7 @@ public class OAuthConfig {
     http
         .exceptionHandling((exceptions) -> exceptions
             .defaultAuthenticationEntryPointFor(
-                new LoginUrlAuthenticationEntryPoint("/login"),
+                new LoginUrlAuthenticationEntryPoint(redirectService.createDefaultLoginPageRedirectUrl()),
                 new MediaTypeRequestMatcher(MediaType.TEXT_HTML)
             )
         )
@@ -75,6 +79,7 @@ public class OAuthConfig {
         .authorizationGrantType(AuthorizationGrantType.CLIENT_CREDENTIALS)
         .redirectUri("http://127.0.0.1:40010/authorized")
         .redirectUri("http://127.0.0.1:40010/test")
+        .redirectUri("https://p-bear.duckdns.org/gateway/pbear-app-oauth/passport")
         .postLogoutRedirectUri("http://127.0.0.1:40010/logged-out")
         .scope(OidcScopes.OPENID)
         .scope(OidcScopes.PROFILE)
