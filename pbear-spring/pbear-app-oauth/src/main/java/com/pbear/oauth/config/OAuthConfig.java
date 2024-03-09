@@ -59,7 +59,7 @@ public class OAuthConfig {
     http
         .exceptionHandling((exceptions) -> exceptions
             .defaultAuthenticationEntryPointFor(
-                new LoginUrlAuthenticationEntryPoint(redirectService.createDefaultLoginPageRedirectUrl()),
+                new LoginUrlAuthenticationEntryPoint(redirectService.createLoginPageRedirectUrl()),
                 new MediaTypeRequestMatcher(MediaType.TEXT_HTML)
             )
         )
