@@ -5,11 +5,15 @@ include 'pbear-spring:pbear-lib'
 include 'pbear-spring:pbear-devtool'
 
 include 'pbear-spring:pbear-app-asset'
+include 'pbear-spring:pbear-app-asset:pbear-app-asset-bff'
+include 'pbear-spring:pbear-app-asset:pbear-app-asset-business'
+
 include 'pbear-spring:pbear-app-gateway'
 include 'pbear-spring:pbear-app-oauth'
 include 'pbear-spring:pbear-app-user'
 
 include 'pbear-spring:pbear-starter-kafka'
+include 'pbear-spring:pbear-starter-mongodb'
 include 'pbear-spring:pbear-starter-r2dbc'
 include 'pbear-spring:pbear-starter-webflux'
 
