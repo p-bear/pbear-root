@@ -1,0 +1,9 @@
+server:
+  port: 40100
+spring:
+  profiles:
+    active: local
+  application:
+    name: pbear-app-asset-business
+mongodb:
+  database: asset
