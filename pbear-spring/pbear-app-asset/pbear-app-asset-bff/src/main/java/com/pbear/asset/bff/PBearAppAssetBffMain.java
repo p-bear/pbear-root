@@ -1,13 +1,13 @@
-package com.pbear.asset;
+package com.pbear.asset.bff;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import reactor.core.publisher.Hooks;
 
 @SpringBootApplication
-public class PBearAppAssetMain {
+public class PBearAppAssetBffMain {
   public static void main(String[] args) {
     Hooks.enableAutomaticContextPropagation();
-    SpringApplication.run(PBearAppAssetMain.class, args);
+    SpringApplication.run(PBearAppAssetBffMain.class, args);
   }
 }
