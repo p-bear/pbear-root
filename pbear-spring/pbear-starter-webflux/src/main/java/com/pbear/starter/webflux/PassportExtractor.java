@@ -10,7 +10,7 @@ import java.util.Objects;
 
 @Component
 public class PassportExtractor {
-  public PassportInfo getPassportInfo(final ServerRequest serverRequest) {
+  public static PassportInfo getPassportInfo(final ServerRequest serverRequest) {
     if (!serverRequest.headers().asHttpHeaders().containsKey(PassportHeaderName.ID.getHeaderName())
         || !serverRequest.headers().asHttpHeaders().containsKey(PassportHeaderName.MAIN_ID.getHeaderName())) {
       throw new PassportNotExistException();
