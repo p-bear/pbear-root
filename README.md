@@ -79,16 +79,22 @@
 ```
 pbear-root
 ├──pbear-spring
+│   ├──pbear-app-asset          # Asset Management Service (Readme 참고)
+│   │   ├──pbear-app-asset-bff
+│   │   └──pbear-app-asset-business
 │   ├──pbear-app-gateway        # API Gateway Server Application
 │   ├──pbear-app-oauth          # OAuth Server Application
 │   ├──pbear-app-user           # User Server Application
 │   ... (to be continue)
+│   │
 │   ├──pbear-devtool            # Custom AnnotationProcessor for project
 │   ├──pbear-lib                # Common Modules & Properties
 │   │
 │   ├──pbear-starter-kafka      # starter library for kafka
 │   │                             - Producer/Consumer Properties Provider
 │   │                             - Common Event Sender (TOBE)
+│   ├──pbear-starter-mongodb    # starter libray for mongoDB
+│   │                             - Config for MongoClient (Reactive)
 │   ├──pbear-starter-r2dbc      # starter library for rdb
 │   │                             - Common R2DBC Config bean
 │   ├──pbear-starter-webflux    # starter library for webflux
@@ -145,7 +151,8 @@ spring:
 ## Links
 ### for more information
 
-- Blog [Project Season2 (2023.12~)](https://p-bear.tistory.com/category/%5B%EC%8B%9C%EC%A6%8C2%5D%20%EA%B0%9C%EC%9D%B8%EC%84%9C%EB%B2%84%20%EA%B0%9C%EB%B0%9C)
+- Project: [Asset Management Service (README)](https://github.com/p-bear/pbear-root/blob/master/pbear-spring/pbear-app-asset/README.md)
+- Blog: [Project Season2 (2023.12~)](https://p-bear.tistory.com/category/%5B%EC%8B%9C%EC%A6%8C2%5D%20%EA%B0%9C%EC%9D%B8%EC%84%9C%EB%B2%84%20%EA%B0%9C%EB%B0%9C)
   - GitHub: [Project Season2](https://github.com/p-bear/pbear-root)
 - Blog: [Main](https://p-bear.tistory.com/)
 - Blog: [Tech Reviews](https://p-bear.tistory.com/category/%EA%B0%9C%EB%B0%9C%20%EC%9D%BC%EC%A7%80)

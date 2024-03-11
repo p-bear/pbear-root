@@ -46,14 +46,19 @@
 - 유사한 Object를 확장성있게 설계하기 위함
 
 #### HOW-TO
-- MongoDB 도입을 통해 Object를 저장
+- MongoDB 도입을 통해 Object를 저장 (Schemaless)
 - Object의 상속구조를 통해 공통 속성 및 개별속성을 분리
 - 상속으로 불러온 data를 JAVA 다형성을 통해 확장성을 확보
 
 ### CQRS *(Half)*
 
 #### 목적
+- Read / Write 분리를 통해 관심사를 분리하고, 유지 보수의 용의성 확보
 
+#### HOW-TO
+- Read의 경우 REST, Write는 Kafka를 통해 수행
+- Read는 동기적, Write는 비동기적으로 수행
+- 일부 Transaction이 필요한 데이터의 경우 동기적(REST)로 수행
 
 ## API Spec
 
