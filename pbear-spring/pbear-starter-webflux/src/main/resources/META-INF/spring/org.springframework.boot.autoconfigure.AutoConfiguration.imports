@@ -5,3 +5,4 @@ com.pbear.starter.webflux.GlobalRestErrorWebExceptionHandler
 com.pbear.starter.webflux.JacksonConfig
 com.pbear.starter.webflux.RequestLogFilter
 com.pbear.starter.webflux.PassportExtractor
+com.pbear.starter.webflux.EventPublisherConfig

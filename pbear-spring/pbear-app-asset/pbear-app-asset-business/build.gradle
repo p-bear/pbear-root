@@ -6,4 +6,5 @@ bootJar {
 
 dependencies {
     implementation project(':pbear-spring:pbear-starter-mongodb')
+    implementation project(':pbear-spring:pbear-starter-kafka')
 }
