@@ -4,18 +4,23 @@ import com.pbear.asset.business.core.data.type.InterestType;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 import org.springframework.data.annotation.TypeAlias;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
 
+/**
+ * 적금형 계좌
+ */
 @Getter
 @Setter
+@SuperBuilder
 @NoArgsConstructor
-@Document(collation = "Account")
+@Document(collection = "account")
 @TypeAlias("SavingAccount")
 public class SavingAccount extends Account {
-  private Float interestRate;
+  private String interestRate;
   private InterestType interestType;
   private LocalDateTime endDate;
 

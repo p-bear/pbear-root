@@ -12,7 +12,7 @@ public class AccountRouter {
   @Bean
   public RouterFunction<ServerResponse> accountRoute(final AccountHandler accountHandler) {
     return RouterFunctions.route()
-        .GET("/account", accountHandler::handleGetAccount)
+        .GET("/accounts", accountHandler::handleGetAccounts)
         .build();
   }
 }

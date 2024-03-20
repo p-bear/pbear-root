@@ -4,16 +4,21 @@ import com.pbear.asset.business.core.data.type.InterestType;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 import org.springframework.data.annotation.TypeAlias;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+/**
+ * 예금형 계좌
+ */
 @Getter
 @Setter
+@SuperBuilder
 @NoArgsConstructor
-@Document(collation = "Account")
+@Document(collection = "account")
 @TypeAlias("DepositAccount")
 public class DepositAccount extends Account {
-  private Float interestRate;
+  private String interestRate;
   private InterestType interestType;
 
   @Override
