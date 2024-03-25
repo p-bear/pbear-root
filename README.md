@@ -151,7 +151,7 @@ spring:
 ## Links
 ### for more information
 
-- Project: [Asset Management Service (README)](https://github.com/p-bear/pbear-root/blob/master/pbear-spring/pbear-app-asset/README.md)
+- Project: [~~Asset Management Service (README)~~ 가계부 앱 사용](https://github.com/p-bear/pbear-root/blob/master/pbear-spring/pbear-app-asset/README.md)
 - Blog: [Project Season2 (2023.12~)](https://p-bear.tistory.com/category/%5B%EC%8B%9C%EC%A6%8C2%5D%20%EA%B0%9C%EC%9D%B8%EC%84%9C%EB%B2%84%20%EA%B0%9C%EB%B0%9C)
   - GitHub: [Project Season2](https://github.com/p-bear/pbear-root)
 - Blog: [Main](https://p-bear.tistory.com/)

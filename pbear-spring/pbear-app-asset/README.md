@@ -24,6 +24,25 @@
 - Micrometer *(Tracing)* *(+prometheus)*
 
 
+## Service Desc
+
+### 개인 자산/뱅킹 관리 시스템 구축
+
+#### Problem
+- 은행앱 문제점 
+  - 불편한 로그인
+  - 속도가 느림
+- 핀테크 가계부앱
+  - 광고 등 불필요한 정보 노출
+  - 원하는 데이터 형태로 가공하거나 서칭에 한계가 있음
+  - 앱으로 서비스되며, 웹은 없음 
+
+#### Solution
+- 오픈 뱅킹 API를 사용하여 주기적인 Data collect
+- API 연동은 기 구현된 인증 시스템을 활용
+- 개인화된 Dashboard 구성
+
+
 ## Key Idea
 
 ### BFF
@@ -44,21 +63,12 @@
 
 #### 목적
 - 유사한 Object를 확장성있게 설계하기 위함
+- Data Schema를 정의하기 힘든 외부 Data를 저장하기 위함
 
 #### HOW-TO
 - MongoDB 도입을 통해 Object를 저장 (Schemaless)
 - Object의 상속구조를 통해 공통 속성 및 개별속성을 분리
 - 상속으로 불러온 data를 JAVA 다형성을 통해 확장성을 확보
-
-### CQRS *(Half)*
-
-#### 목적
-- Read / Write 분리를 통해 관심사를 분리하고, 유지 보수의 용의성 확보
-
-#### HOW-TO
-- Read의 경우 REST, Write는 Kafka를 통해 수행
-- Read는 동기적, Write는 비동기적으로 수행
-- 일부 Transaction이 필요한 데이터의 경우 동기적(REST)로 수행
 
 ## API Spec
 
