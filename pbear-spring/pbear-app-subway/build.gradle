@@ -1,0 +1,9 @@
+bootJar {
+    enabled = false
+}
+
+subprojects {
+    dependencies {
+        implementation project(':pbear-spring:pbear-starter-webflux')
+    }
+}
