@@ -14,7 +14,7 @@ public class ResAccount {
   private String id;
   private Long ownerId;
   private String accountNumber;
-  private String createCompanyName;
+  private String bankName;
   private LocalDateTime createDate;
   private String alias;
   private Float interestRate;

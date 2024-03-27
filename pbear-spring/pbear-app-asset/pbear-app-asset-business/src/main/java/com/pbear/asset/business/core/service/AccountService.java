@@ -4,7 +4,7 @@ import com.pbear.asset.business.core.data.exception.AccountNotExistException;
 import com.pbear.asset.business.core.data.exception.AccountNotValidException;
 import com.pbear.asset.business.core.document.Account;
 import com.pbear.asset.business.core.repository.AccountRepository;
-import com.pbear.lib.function.FieldValidator;
+import com.pbear.lib.common.FieldValidatable;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -19,7 +19,7 @@ public class AccountService {
 
   public <T extends Account> Mono<T> saveAccount(final T account) throws AccountNotValidException {
     return Mono.just(account)
-        .filter(FieldValidator::isValid)
+        .filter(FieldValidatable::isValid)
         .switchIfEmpty(Mono.defer(() -> Mono.error(new AccountNotValidException())))
         .flatMap(this.accountRepository::save);
   }

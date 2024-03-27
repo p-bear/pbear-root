@@ -1,0 +1,17 @@
+server:
+  port: 40200
+spring:
+  profiles:
+    active: local
+  application:
+    name: pbear-app-subway-business
+  data:
+    mongodb:
+      database: subway
+seoul-open-data:
+  subway:
+    schema: http
+    host: openapi.seoul.go.kr
+    port: 8088
+    station:
+      path: /{id}/json/subwayStationMaster/{startIndex}/{endIndex}

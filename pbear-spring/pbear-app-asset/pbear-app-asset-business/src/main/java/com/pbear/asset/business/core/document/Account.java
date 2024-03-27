@@ -1,6 +1,6 @@
 package com.pbear.asset.business.core.document;
 
-import com.pbear.lib.function.FieldValidator;
+import com.pbear.lib.common.FieldValidatable;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -18,7 +18,7 @@ import java.util.Set;
 @NoArgsConstructor
 @Document(collection = "account")
 @TypeAlias("Account")
-public class Account implements FieldValidator {
+public class Account implements FieldValidatable {
   @Id
   private String id;
   private Long ownerId;
