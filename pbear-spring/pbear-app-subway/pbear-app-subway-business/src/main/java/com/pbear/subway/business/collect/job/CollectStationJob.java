@@ -1,6 +1,6 @@
 package com.pbear.subway.business.collect.job;
 
-import com.pbear.lib.common.FieldNotValidException;
+import com.pbear.starter.webflux.util.FieldValidator;
 import com.pbear.subway.business.collect.data.document.CollectStationJobLog;
 import com.pbear.subway.business.collect.data.dto.ResSubwayStationMaster;
 import com.pbear.subway.business.collect.service.SeoulSubwayService;
@@ -12,7 +12,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
 
 @Component
 @RequiredArgsConstructor
@@ -27,7 +26,7 @@ public class CollectStationJob {
    * 2. save
    * 3. Data Count 및 Save JobLog
    */
-  @Scheduled(cron = "@hourly")
+  @Scheduled(cron = "@midnight")
   public void collectStation() {
     this.getAllSeoulSubwayStations()
         .map(StationMapper.INSTANCE::toStationDocument)
@@ -45,15 +44,12 @@ public class CollectStationJob {
    */
   private Flux<ResSubwayStationMaster.Station> getAllSeoulSubwayStations() {
     return this.seoulSubwayService.getSeoulStationData(0, 1)
-        .doOnNext(a -> System.out.println())
-        .filter(ResSubwayStationMaster::isValid)
-        .switchIfEmpty(Mono.defer(() -> Mono.error(new FieldNotValidException(ResSubwayStationMaster.class))))
+        .filterWhen(FieldValidator::validate)
         .map(ResSubwayStationMaster::getSubwayStationMaster)
-        .filter(ResSubwayStationMaster.SubwayStationMaster::isValid)
-        .switchIfEmpty(Mono.defer(() -> Mono.error(new FieldNotValidException(ResSubwayStationMaster.SubwayStationMaster.class))))
-        .flatMap(subwayStationMaster -> this.seoulSubwayService.getSeoulStationData(0, subwayStationMaster.getListTotalCount().intValue()))
-        .filter(ResSubwayStationMaster::isValid)
-        .switchIfEmpty(Mono.defer(() -> Mono.error(new FieldNotValidException(ResSubwayStationMaster.class))))
+        .filterWhen(FieldValidator::validate)
+        .map(subwayStationMaster -> subwayStationMaster.getListTotalCount().intValue())
+        .flatMap(totalCount -> this.seoulSubwayService.getSeoulStationData(0, totalCount))
+        .filterWhen(FieldValidator::validate)
         .flatMapIterable(resSubwayStationMaster -> resSubwayStationMaster.getSubwayStationMaster().getRow());
   }
 }

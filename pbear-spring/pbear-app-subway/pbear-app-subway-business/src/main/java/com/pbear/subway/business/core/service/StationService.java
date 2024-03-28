@@ -1,7 +1,6 @@
 package com.pbear.subway.business.core.service;
 
-import com.pbear.lib.common.FieldNotValidException;
-import com.pbear.lib.common.FieldValidatable;
+import com.pbear.starter.webflux.util.FieldValidator;
 import com.pbear.subway.business.core.document.Station;
 import com.pbear.subway.business.core.repository.StationRepository;
 import lombok.RequiredArgsConstructor;
@@ -15,8 +14,7 @@ public class StationService {
 
   public Mono<Station> saveStation(final Station station) {
     return Mono.just(station)
-        .filter(FieldValidatable::isValid)
-        .switchIfEmpty(Mono.defer(() -> Mono.error(new FieldNotValidException(Station.class))))
+        .filterWhen(FieldValidator::validate)
         .flatMap(this.stationRepository::save);
   }
 }
