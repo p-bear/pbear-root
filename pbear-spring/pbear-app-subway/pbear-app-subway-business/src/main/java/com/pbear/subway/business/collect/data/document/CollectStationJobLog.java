@@ -1,7 +1,6 @@
 package com.pbear.subway.business.collect.data.document;
 
 import com.pbear.subway.business.core.document.JobLog;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -11,16 +10,32 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Getter
 @Setter
 @NoArgsConstructor
-@AllArgsConstructor
 @Document(collection = "subway.stations")
 @TypeAlias("CollectStationJobLog")
 public class CollectStationJobLog extends JobLog {
-  private Long collectedStationCount;
+  private Long collectedStationBeforeCount;
+  private Long collectedStationAfterCount;
+  private String errorMessage;
+
+  public CollectStationJobLog(final boolean isSuccess, final Long collectedStationBeforeCount, final Long collectedStationAfterCount) {
+    super(isSuccess);
+    this.collectedStationBeforeCount = collectedStationBeforeCount;
+    this.collectedStationAfterCount = collectedStationAfterCount;
+  }
+
+  public CollectStationJobLog(final boolean isSuccess, final Long collectedStationBeforeCount, final Long collectedStationAfterCount, final String errorMessage) {
+    super(isSuccess);
+    this.collectedStationBeforeCount = collectedStationBeforeCount;
+    this.collectedStationAfterCount = collectedStationAfterCount;
+    this.errorMessage = errorMessage;
+  }
 
   @Override
   public String toString() {
     return "CollectStationJobLog{" +
-        "collectedStationCount=" + collectedStationCount +
+        "collectedStationBeforeCount=" + collectedStationBeforeCount +
+        ", collectedStationAfterCount=" + collectedStationAfterCount +
+        ", errorMessage='" + errorMessage + '\'' +
         "} " + super.toString();
   }
 }

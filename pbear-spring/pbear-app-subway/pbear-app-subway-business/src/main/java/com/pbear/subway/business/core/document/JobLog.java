@@ -20,8 +20,13 @@ import java.time.LocalDateTime;
 public class JobLog implements FieldValidatable {
   @Id
   private String id;
+  private boolean isSuccess = false;
   private String name = this.generateName();
   private LocalDateTime createDate = LocalDateTime.now();
+
+  public JobLog(final boolean isSuccess) {
+    this.isSuccess = isSuccess;
+  }
 
   @Override
   public boolean isValid() {
