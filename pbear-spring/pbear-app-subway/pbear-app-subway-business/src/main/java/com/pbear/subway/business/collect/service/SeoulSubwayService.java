@@ -1,5 +1,6 @@
 package com.pbear.subway.business.collect.service;
 
+import com.pbear.subway.business.collect.data.dto.ResCardSubwayStatsNew;
 import com.pbear.subway.business.collect.data.dto.ResSubwayStationMaster;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,6 +23,8 @@ public class SeoulSubwayService {
   private int port;
   @Value("${seoul-open-data.subway.station.path}")
   private String stationPath;
+  @Value("${seoul-open-data.subway.cardSubwayStatesNew.path}")
+  private String cardSubwayStatesNewPath;
 
   public Mono<ResSubwayStationMaster> getSeoulStationData(final int startIndex, final int endIndex) {
     return this.webClient
@@ -34,5 +37,18 @@ public class SeoulSubwayService {
             .build(this.apiKey, startIndex, endIndex))
         .retrieve()
         .bodyToMono(ResSubwayStationMaster.class);
+  }
+
+  public Mono<ResCardSubwayStatsNew> getSeoulCardSubwayStats(final int startIndex, final int endIndex, final String yyyyMMdd) {
+    return this.webClient
+        .method(HttpMethod.GET)
+        .uri(uriBuilder -> uriBuilder
+            .scheme(this.schema)
+            .host(this.host)
+            .port(this.port)
+            .path(this.cardSubwayStatesNewPath)
+            .build(this.apiKey, startIndex, endIndex, yyyyMMdd))
+        .retrieve()
+        .bodyToMono(ResCardSubwayStatsNew.class);
   }
 }

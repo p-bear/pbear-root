@@ -14,4 +14,6 @@ seoul-open-data:
     host: openapi.seoul.go.kr
     port: 8088
     station:
-      path: /{id}/json/subwayStationMaster/{startIndex}/{endIndex}
+      path: /{apiKey}/json/subwayStationMaster/{startIndex}/{endIndex}
+    cardSubwayStatesNew:
+      path: /{apiKey}/json/CardSubwayStatsNew/{startIndex}/{endIndex}/{yyyyMMdd}

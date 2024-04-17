@@ -1,4 +1,4 @@
-package com.pbear.subway.business.collect.job.impl;
+package com.pbear.subway.business.collect.job.station;
 
 import com.pbear.starter.webflux.util.FieldValidator;
 import com.pbear.subway.business.collect.data.document.CollectStationJobLog;
@@ -40,7 +40,7 @@ public class CollectStationJob extends AbstractAsyncJob<CollectStationJobState, 
    * flow: https://github.com/p-bear/charts.draw.io/blob/main/subway/jobFlow.drawio.png?raw=true
    */
   @Override
-  protected Mono<CollectStationJobLog> executeInternal() {
+  protected Mono<CollectStationJobLog> executeInternal(final CollectStationJobState collectStationJobState) {
     return this.collectStation()
         .onErrorResume(throwable -> Mono.defer(() -> Mono.just(new CollectStationJobLog(false, -1L, -1L, throwable.getMessage()))))
         .switchIfEmpty(Mono.defer(() -> Mono.just(new CollectStationJobLog(false, -1L, -1L))));

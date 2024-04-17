@@ -14,9 +14,9 @@ import reactor.function.TupleUtils;
 
 @RequiredArgsConstructor
 public abstract class AbstractAsyncJob<S extends JobState, L extends JobLog> implements AsyncJob<Boolean> {
-  private final JobService jobService;
+  protected final JobService jobService;
   private final ObservationRegistry observationRegistry;
-  private final Logger log = LoggerFactory.getLogger(this.getClass());
+  protected final Logger log = LoggerFactory.getLogger(this.getClass());
 
   /*
    * flow: https://github.com/p-bear/charts.draw.io/blob/main/subway/jobFlow.drawio.png?raw=true
@@ -36,9 +36,8 @@ public abstract class AbstractAsyncJob<S extends JobState, L extends JobLog> imp
         .defaultIfEmpty(this.defaultJobState())
         .filter(this.jobService::isJobExecutable)
         .flatMap(jobState -> this.jobService.saveJobState(jobState, JobState.Type.RUNNING))
-        .zipWith(Mono.just(this.getClass())
-            .doOnNext(clz -> log.info("[{}] Job Start", clz.getSimpleName()))
-            .flatMap(unused -> this.executeInternal())
+        .doOnNext(unused -> log.info("[{}] Job Start", this.getClass().getSimpleName()))
+        .zipWhen(jobState -> this.executeInternal(jobState)
             .flatMap(this.jobService::saveJobLog)
             .doOnNext(jobLog -> log.info("jobLog: {}", jobLog)))
         .delayUntil(TupleUtils.function((state, log) -> Mono.just(state)
@@ -55,5 +54,5 @@ public abstract class AbstractAsyncJob<S extends JobState, L extends JobLog> imp
   protected abstract Class<S> getJobStateClz();
   protected abstract S defaultJobState();
   // must not Empty
-  protected abstract Mono<L> executeInternal();
+  protected abstract Mono<L> executeInternal(final S jobState);
 }

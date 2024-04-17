@@ -21,6 +21,10 @@ public class Station implements FieldValidatable {
   private Double latitude; // 위도,x,동서
   private Double longitude; // 경도,y,남북
 
+  public boolean isSameStation(final String name, final String routeName) {
+    return this.name.equals(name) && this.routeName.equals(routeName);
+  }
+
   @Override
   public boolean isValid() {
     return !this.hasNullField(this.id, this.name, this.routeName, this.latitude, this.longitude);
