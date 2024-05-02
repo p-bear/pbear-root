@@ -1,5 +1,6 @@
 package com.pbear.starter.kafka.message;
 
+import com.pbear.lib.event.CommonMessage;
 import com.pbear.starter.kafka.KafkaPropProvider;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
@@ -17,26 +18,26 @@ import reactor.kafka.sender.SenderRecord;
 @Slf4j
 public class KafkaMessageSender {
   private final KafkaPropProvider kafkaPropProvider;
-  private KafkaSender<String, KafkaMessage<?>> kafkaSender;
+  private KafkaSender<String, CommonMessage<?>> kafkaSender;
 
   @Async
   @EventListener
-  public void sendKafkaMessage(final KafkaMessage<?> kafkaMessage) {
+  public void sendKafkaMessage(final KafkaSendConfig<?> kafkaSendConfig) {
     this.kafkaSender.send(Mono
-            .just(kafkaMessage)
+            .just(kafkaSendConfig)
             .map(this::createSenderRecord))
         .doOnNext(result -> log.info("produce success, topic: {}, partition: {}, offset: {}",
             result.recordMetadata().topic(), result.recordMetadata().partition(), result.recordMetadata().offset()))
         .subscribe();
   }
 
-  private SenderRecord<String, KafkaMessage<?>, Integer> createSenderRecord(final KafkaMessage<?> kafkaMessage) {
+  private SenderRecord<String, CommonMessage<?>, Integer> createSenderRecord(final KafkaSendConfig<?> kafkaSendConfig) {
     return SenderRecord.create(
-        kafkaMessage.getTopic(),
+        kafkaSendConfig.createFullTopic(),
         null,
-        kafkaMessage.getTimestamp(),
-        kafkaMessage.getKey(),
-        kafkaMessage,
+        kafkaSendConfig.getCommonMessage().timestamp(),
+        kafkaSendConfig.getKey(),
+        kafkaSendConfig.getCommonMessage(),
         0);
   }
 
