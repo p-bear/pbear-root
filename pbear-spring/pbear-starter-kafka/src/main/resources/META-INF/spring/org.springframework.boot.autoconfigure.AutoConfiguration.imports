@@ -1,5 +1,4 @@
 com.pbear.starter.kafka.KafkaPropProvider
-com.pbear.starter.kafka.JsonMessageConverterConfig
-com.pbear.starter.kafka.message.KafkaMessageSender
-com.pbear.starter.kafka.message.KafkaMessagePublisher
-com.pbear.starter.kafka.message.KafkaMessageReceiverProvider
+com.pbear.starter.kafka.message.send.KafkaMessageSender
+com.pbear.starter.kafka.message.send.KafkaMessagePublisher
+com.pbear.starter.kafka.message.receive.KafkaMessageReceiverProvider

@@ -1,4 +1,4 @@
-version = '0.0.3'
+version = '0.0.4'
 
 bootJar {
     enabled = false
@@ -6,6 +6,7 @@ bootJar {
 
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter'
+    implementation 'com.fasterxml.jackson.core:jackson-databind'
     api 'org.springframework.kafka:spring-kafka'
     api 'io.projectreactor.kafka:reactor-kafka:1.3.22+'
     api 'org.apache.kafka:kafka-streams'
