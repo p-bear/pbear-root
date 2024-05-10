@@ -53,7 +53,7 @@ public class KafkaMessageSender {
 
   private SenderRecord<String, CommonMessage<?>, Integer> createSenderRecord(final KafkaSendConfig<?> kafkaSendConfig) {
     return SenderRecord.create(
-        kafkaSendConfig.createFullTopic(),
+        kafkaSendConfig.getTopic().getFullTopic(kafkaSendConfig.getCommonMessage().messageType()),
         null,
         kafkaSendConfig.getCommonMessage().timestamp(),
         kafkaSendConfig.getKey(),

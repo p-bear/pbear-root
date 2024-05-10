@@ -17,6 +17,7 @@ public class JacksonConfig {
   @Bean
   public Jackson2ObjectMapperBuilderCustomizer jackson2ObjectMapperBuilderCustomizer() {
     return builder -> builder
+        .failOnUnknownProperties(false)
         .serializers(new LocalDateTimeEpochMilliSerializer())
         .serializers(new LocalDateEpochMilliSerializer());
   }

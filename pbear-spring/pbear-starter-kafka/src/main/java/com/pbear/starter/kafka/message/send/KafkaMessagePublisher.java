@@ -2,6 +2,7 @@ package com.pbear.starter.kafka.message.send;
 
 import com.pbear.lib.event.CommonMessage;
 import com.pbear.lib.event.MessageType;
+import com.pbear.starter.kafka.message.CommonMessageTopic;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
@@ -18,7 +19,7 @@ public class KafkaMessagePublisher {
   @Value("${spring.application.name}")
   private String applicationName;
 
-  public <T> Mono<String> publish(final MessageType messageType, final String topic, final String key, final T data) {
+  public <T> Mono<String> publish(final MessageType messageType, final CommonMessageTopic topic, final String key, final T data) {
     return Mono.just(UUID.randomUUID().toString())
         .transformDeferredContextual((messageIdMono, contextView) -> messageIdMono
             .map(messageId -> KafkaSendConfig
