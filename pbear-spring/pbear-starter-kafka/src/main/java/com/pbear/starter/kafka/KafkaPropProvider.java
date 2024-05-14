@@ -22,6 +22,8 @@ public class KafkaPropProvider {
   private String bootstrapServers;
   @Value("${spring.application.name}")
   private String applicationName;
+  @Value("${spring.profiles.active}")
+  private String activeProfile;
   @Value("${kafka.streams.instance-id:}")
   private String streamInstanceId;
   @Value("${kafka.streams.state.dir:}")
@@ -48,7 +50,6 @@ public class KafkaPropProvider {
     Properties properties = new Properties();
     properties.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, this.bootstrapServers);
     properties.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
-//    properties.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, CommonMessageDeserializer.class);
     return properties;
   }
 
@@ -63,7 +64,7 @@ public class KafkaPropProvider {
   public Map<String, Object> getStreamsProperties() {
     Map<String, Object> properties = new HashMap<>();
     properties.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, this.bootstrapServers);
-    properties.put(StreamsConfig.APPLICATION_ID_CONFIG, this.applicationName);
+    properties.put(StreamsConfig.APPLICATION_ID_CONFIG, this.applicationName + "-" + this.activeProfile);
     properties.put(StreamsConfig.DEFAULT_DESERIALIZATION_EXCEPTION_HANDLER_CLASS_CONFIG, LogAndContinueExceptionHandler.class);    // Exception 발생한 레코드 스킵 후 계속 진행
 //    properties.put(StreamsConfig.APPLICATION_SERVER_CONFIG, serviceRegistryAccessor.getHostInfo());
     properties.put(StreamsConfig.NUM_STANDBY_REPLICAS_CONFIG, 1);
@@ -78,7 +79,9 @@ public class KafkaPropProvider {
       properties.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, keySerde.getClass());
     }
 
-    properties.put(ConsumerConfig.GROUP_INSTANCE_ID_CONFIG, this.streamInstanceId.isEmpty() ? this.applicationName : this.streamInstanceId);
+    if (!this.streamInstanceId.isEmpty()) {
+      properties.put(ConsumerConfig.GROUP_INSTANCE_ID_CONFIG, this.streamInstanceId);
+    }
     properties.put(ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, 60000);  // Timeout for streams offline by brokers
 
     return properties;

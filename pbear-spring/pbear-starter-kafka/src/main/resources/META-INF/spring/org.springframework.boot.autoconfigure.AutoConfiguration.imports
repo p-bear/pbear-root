@@ -1,6 +1,6 @@
 com.pbear.starter.kafka.KafkaPropProvider
 
-com.pbear.starter.kafka.message.DeseiralizerProvider
+com.pbear.starter.kafka.message.common.DeseiralizerProvider
 
 com.pbear.starter.kafka.message.receive.KafkaMessageReceiverProvider
 

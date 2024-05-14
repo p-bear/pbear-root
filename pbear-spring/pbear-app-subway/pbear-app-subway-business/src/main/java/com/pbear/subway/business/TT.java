@@ -1,11 +1,11 @@
 package com.pbear.subway.business;
 
-import com.pbear.lib.event.CommonMessage;
 import com.pbear.lib.event.MessageType;
 import com.pbear.starter.kafka.message.send.KafkaMessagePublisher;
 import com.pbear.starter.kafka.message.streams.StoreManager;
-import com.pbear.starter.kafka.message.EmptyData;
+import com.pbear.starter.kafka.message.common.EmptyData;
 import com.pbear.subway.business.collect.data.kafka.ReqCollectStationStatistic;
+import com.pbear.subway.business.collect.data.kafka.StationStatisticsData;
 import com.pbear.subway.business.common.seoulopenapi.dto.ResSubwayStationMaster;
 import com.pbear.subway.business.common.topic.SubwayTopic;
 import jakarta.annotation.PostConstruct;
@@ -50,7 +50,7 @@ public class TT {
     return Mono.just(a)
         .map(s -> storeManager.getReadOnlyStore(MessageType.DATA,
                 SubwayTopic.STATIONS,
-                new ParameterizedTypeReference<CommonMessage<ResSubwayStationMaster.Station>>() {})
+                new ParameterizedTypeReference<ResSubwayStationMaster.Station>() {})
             .get(s));
   }
 
@@ -60,7 +60,17 @@ public class TT {
         .map(s -> storeManager.getReadOnlyStore(
             MessageType.REQUEST,
             SubwayTopic.STATIONS_STATISTICS,
-                new ParameterizedTypeReference<CommonMessage<ReqCollectStationStatistic>>() {})
+                new ParameterizedTypeReference<ReqCollectStationStatistic>() {})
+            .get(s));
+  }
+
+  @GetMapping("/vv")
+  public Mono<?> vv(@RequestParam final String a) {
+    return Mono.just(a)
+        .map(s -> storeManager.getReadOnlyStore(
+                MessageType.DATA,
+                SubwayTopic.STATIONS_STATISTICS,
+                new ParameterizedTypeReference<StationStatisticsData>() {})
             .get(s));
   }
 }

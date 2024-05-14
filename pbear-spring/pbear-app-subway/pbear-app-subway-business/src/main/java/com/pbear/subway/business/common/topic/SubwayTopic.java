@@ -1,11 +1,11 @@
 package com.pbear.subway.business.common.topic;
 
 import com.pbear.lib.event.MessageType;
-import com.pbear.starter.kafka.message.CommonMessageTopic;
+import com.pbear.starter.kafka.message.common.MessageTopic;
 import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
-public enum SubwayTopic implements CommonMessageTopic {
+public enum SubwayTopic implements MessageTopic {
   STATIONS("subway.stations"),
   STATIONS_STATISTICS("subway.stations.statistics");
 

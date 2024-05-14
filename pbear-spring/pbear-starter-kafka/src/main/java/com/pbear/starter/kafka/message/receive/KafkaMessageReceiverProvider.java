@@ -2,7 +2,7 @@ package com.pbear.starter.kafka.message.receive;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.pbear.lib.event.CommonMessage;
+import com.pbear.lib.event.Message;
 import com.pbear.starter.kafka.KafkaPropProvider;
 import io.micrometer.observation.Observation;
 import io.micrometer.observation.ObservationRegistry;
@@ -35,6 +35,8 @@ public class KafkaMessageReceiverProvider {
   private final ObjectMapper objectMapper = new ObjectMapper();
   @Value("${spring.application.name}")
   private String applicationName;
+  @Value("${spring.profiles.active}")
+  private String activeProfile;
 
   public <K, V> Flux<?> executeReceiver(final KafkaReceiverConfig<K, V> kafkaReceiverConfig) {
     return this.executeReceiver(kafkaReceiverConfig,
@@ -43,7 +45,7 @@ public class KafkaMessageReceiverProvider {
 
   public <K, V> Flux<?> executeReceiver(
       final KafkaReceiverConfig<K, V> kafkaReceiverConfig,
-      final Function<KafkaReceiver<K, CommonMessage<V>>, Flux<ConsumerRecord<K, CommonMessage<V>>>> receiveFunction) {
+      final Function<KafkaReceiver<K, Message<V>>, Flux<ConsumerRecord<K, Message<V>>>> receiveFunction) {
     // properties initialize with default
     Properties consumerProperties = this.kafkaPropProvider.getConsumerProperties(kafkaReceiverConfig.getAdditionalProperties());
     // consumer groupId
@@ -51,12 +53,12 @@ public class KafkaMessageReceiverProvider {
     if (!StringUtils.hasText(kafkaReceiverConfig.getGroupId())) {
       throw new IllegalArgumentException("group.id cannot be null");
     }
-    consumerProperties.put(ConsumerConfig.GROUP_ID_CONFIG, this.applicationName + "-" + kafkaReceiverConfig.getGroupId());
+    consumerProperties.put(ConsumerConfig.GROUP_ID_CONFIG, this.applicationName + "-" + this.activeProfile + "-" + kafkaReceiverConfig.getGroupId());
 
     return receiveFunction.apply(KafkaReceiver.create(ReceiverOptions
-            .<K, CommonMessage<V>>create(consumerProperties)
+            .<K, Message<V>>create(consumerProperties)
             .subscription(Pattern.compile(kafkaReceiverConfig.getTopic().getFullTopic(kafkaReceiverConfig.getMessageType())))
-            .withValueDeserializer(kafkaReceiverConfig.getCommonMessageDeserializer())
+            .withValueDeserializer(kafkaReceiverConfig.getMessageDeserializer())
             .withObservation(this.observationRegistry)))
         .flatMap(record -> {
           Observation receiverObservation = KafkaReceiverObservation.RECEIVER_OBSERVATION.start(

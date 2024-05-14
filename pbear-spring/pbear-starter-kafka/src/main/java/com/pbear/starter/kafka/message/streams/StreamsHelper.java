@@ -1,9 +1,9 @@
 package com.pbear.starter.kafka.message.streams;
 
-import com.pbear.lib.event.CommonMessage;
+import com.pbear.lib.event.Message;
 import com.pbear.lib.event.MessageType;
-import com.pbear.starter.kafka.message.CommonMessageDeserializer;
-import com.pbear.starter.kafka.message.CommonMessageTopic;
+import com.pbear.starter.kafka.message.common.MessageDeserializer;
+import com.pbear.starter.kafka.message.common.MessageTopic;
 import lombok.RequiredArgsConstructor;
 import org.apache.kafka.common.utils.Bytes;
 import org.apache.kafka.streams.StreamsBuilder;
@@ -22,8 +22,8 @@ public class StreamsHelper {
   private final StreamsBuilder streamsBuilder;
 
   public <V> StreamsBuilder createStreamsBuilderWithStateStore(final MessageType messageType,
-                                                               final CommonMessageTopic topic,
-                                                               final CommonMessageDeserializer<V> deserializer) {
+                                                               final MessageTopic topic,
+                                                               final MessageDeserializer<V> deserializer) {
     return this.streamsBuilder
         .addStateStore(
             Stores.keyValueStoreBuilder(
@@ -33,14 +33,14 @@ public class StreamsHelper {
         );
   }
 
-  public <V> GlobalKTable<String, CommonMessage<V>> createCommonMessageKTable(final MessageType messageType,
-                                                                              final CommonMessageTopic topic,
-                                                                              final CommonMessageDeserializer<V> deserializer) {
+  public <V> GlobalKTable<String, Message<V>> createMessageKTable(final MessageType messageType,
+                                                                        final MessageTopic topic,
+                                                                        final MessageDeserializer<V> deserializer) {
     return this.streamsBuilder
         .globalTable(
             topic.getFullTopic(messageType),
             Materialized
-                .<String, CommonMessage<V>, KeyValueStore<Bytes, byte[]>>as(topic.getStoreName(messageType))
+                .<String, Message<V>, KeyValueStore<Bytes, byte[]>>as(topic.getStoreName(messageType))
                 .withStoreType(Materialized.StoreType.IN_MEMORY)
                 .withKeySerde(topic.createKeySerdes())
                 .withValueSerde(topic.createValueSerdes(deserializer)));

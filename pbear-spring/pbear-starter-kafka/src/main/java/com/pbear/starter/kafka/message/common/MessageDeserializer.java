@@ -1,8 +1,8 @@
-package com.pbear.starter.kafka.message;
+package com.pbear.starter.kafka.message.common;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.pbear.lib.event.CommonMessage;
+import com.pbear.lib.event.Message;
 import lombok.RequiredArgsConstructor;
 import org.apache.kafka.common.errors.SerializationException;
 import org.apache.kafka.common.serialization.Deserializer;
@@ -10,13 +10,13 @@ import org.apache.kafka.common.serialization.Deserializer;
 import java.io.IOException;
 
 @RequiredArgsConstructor
-public class CommonMessageDeserializer<V> implements Deserializer<CommonMessage<V>> {
+public class MessageDeserializer<V> implements Deserializer<Message<V>> {
   private final ObjectMapper objectMapper;
-  private final TypeReference<CommonMessage<V>> valueType;
+  private final TypeReference<Message<V>> valueType;
 
 
   @Override
-  public CommonMessage<V> deserialize(final String topic, final byte[] bytes) {
+  public Message<V> deserialize(final String topic, final byte[] bytes) {
     try {
       return this.objectMapper.readValue(bytes, valueType);
     } catch (IOException e) {

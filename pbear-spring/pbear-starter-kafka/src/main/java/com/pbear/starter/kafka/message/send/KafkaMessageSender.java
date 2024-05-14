@@ -1,6 +1,6 @@
 package com.pbear.starter.kafka.message.send;
 
-import com.pbear.lib.event.CommonMessage;
+import com.pbear.lib.event.Message;
 import com.pbear.starter.kafka.KafkaPropProvider;
 import io.micrometer.observation.ObservationRegistry;
 import io.micrometer.observation.contextpropagation.ObservationThreadLocalAccessor;
@@ -28,12 +28,12 @@ public class KafkaMessageSender {
 
   @Value("${spring.application.name}")
   private String applicationName;
-  private KafkaSender<String, CommonMessage<?>> kafkaSender;
+  private KafkaSender<String, Message<?>> kafkaSender;
 
   @Async
   @EventListener
   public void sendKafkaMessage(final KafkaSendConfig<?> kafkaSendConfig) {
-    SenderRecord<String, CommonMessage<?>, Integer> senderRecord = this.createSenderRecord(kafkaSendConfig);
+    SenderRecord<String, Message<?>, Integer> senderRecord = this.createSenderRecord(kafkaSendConfig);
 
     Flux.just(senderRecord)
         .map(record -> KafkaSenderObservation.SENDER_OBSERVATION.start(
@@ -51,13 +51,13 @@ public class KafkaMessageSender {
         .subscribe();
   }
 
-  private SenderRecord<String, CommonMessage<?>, Integer> createSenderRecord(final KafkaSendConfig<?> kafkaSendConfig) {
+  private SenderRecord<String, Message<?>, Integer> createSenderRecord(final KafkaSendConfig<?> kafkaSendConfig) {
     return SenderRecord.create(
-        kafkaSendConfig.getTopic().getFullTopic(kafkaSendConfig.getCommonMessage().messageType()),
+        kafkaSendConfig.getTopic().getFullTopic(kafkaSendConfig.getMessage().messageType()),
         null,
-        kafkaSendConfig.getCommonMessage().timestamp(),
+        kafkaSendConfig.getMessage().timestamp(),
         kafkaSendConfig.getKey(),
-        kafkaSendConfig.getCommonMessage(),
+        kafkaSendConfig.getMessage(),
         0);
   }
 

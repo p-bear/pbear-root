@@ -5,9 +5,6 @@ spring:
     active: local
   application:
     name: pbear-app-subway-business
-  data:
-    mongodb:
-      database: subway
 seoul-open-data:
   subway:
     schema: http

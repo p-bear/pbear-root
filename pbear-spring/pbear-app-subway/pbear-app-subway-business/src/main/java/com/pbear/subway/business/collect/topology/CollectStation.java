@@ -1,10 +1,10 @@
 package com.pbear.subway.business.collect.topology;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.pbear.lib.event.CommonMessage;
+import com.pbear.lib.event.Message;
 import com.pbear.lib.event.MessageType;
-import com.pbear.starter.kafka.message.DeseiralizerProvider;
-import com.pbear.starter.kafka.message.EmptyData;
+import com.pbear.starter.kafka.message.common.DeseiralizerProvider;
+import com.pbear.starter.kafka.message.common.EmptyData;
 import com.pbear.starter.kafka.message.receive.KafkaReceiverConfig;
 import com.pbear.starter.kafka.message.send.KafkaMessagePublisher;
 import com.pbear.starter.kafka.message.receive.KafkaMessageReceiverProvider;
@@ -45,7 +45,7 @@ public class CollectStation implements SubTopology {
         .topic(SubwayTopic.STATIONS)
         .additionalProperties(additionalProperties)
         .consumeMonoFunc(this::handleSubwayStationsRequest)
-        .commonMessageDeserializer(this.deseiralizerProvider.getCommonMessageDeserializer(new TypeReference<>() {}))
+        .messageDeserializer(this.deseiralizerProvider.getMessageDeserializer(new TypeReference<>() {}))
         .handlerName(this.getClass().getSimpleName())
         .groupId(this.getClass().getSimpleName())
         .build();
@@ -61,12 +61,15 @@ public class CollectStation implements SubTopology {
         .subscribe();
   }
 
-  private Mono<?> handleSubwayStationsRequest(final ConsumerRecord<String, CommonMessage<EmptyData>> record) {
+  private Mono<?> handleSubwayStationsRequest(final ConsumerRecord<String, Message<EmptyData>> record) {
     return Flux.just(record.value())
         .publishOn(Schedulers.single())
         .flatMap(value -> this.getAllSeoulSubwayStations())
         .flatMap(station -> this.kafkaMessagePublisher.publish(
-            MessageType.DATA, SubwayTopic.STATIONS, station.getStatnId(), station))
+            MessageType.DATA,
+            SubwayTopic.STATIONS,
+            station.getStatnId(),
+            station))
         .collectList();
   }
 

@@ -1,6 +1,6 @@
 package com.pbear.lib.event;
 
-public record CommonMessage<T>(
+public record Message<T>(
     String id,
     MessageType messageType,
     String issuer,

@@ -1,8 +1,8 @@
 package com.pbear.starter.kafka.message.streams;
 
-import com.pbear.lib.event.CommonMessage;
+import com.pbear.lib.event.Message;
 import com.pbear.lib.event.MessageType;
-import com.pbear.starter.kafka.message.CommonMessageTopic;
+import com.pbear.starter.kafka.message.common.MessageTopic;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.streams.KafkaStreams;
@@ -27,21 +27,21 @@ public class StoreManager {
   private final Map<String, ReadOnlyKeyValueStore> readOnlyStoreMap = new HashMap<>();
 
   @SuppressWarnings("unchecked")
-  public <V> ReadOnlyKeyValueStore<String, CommonMessage<V>> getReadOnlyStore(final MessageType messageType,
-                                                                              final CommonMessageTopic topic,
-                                                                              final ParameterizedTypeReference<V> type) {
+  public <V> ReadOnlyKeyValueStore<String, Message<V>> getReadOnlyStore(final MessageType messageType,
+                                                                        final MessageTopic topic,
+                                                                        final ParameterizedTypeReference<V> valueType) {
     final String storeName = topic.getStoreName(messageType);
     if (this.readOnlyStoreMap.containsKey(storeName)) {
       return this.readOnlyStoreMap.get(storeName);
     }
 
     KafkaStreams kafkaStreams = this.streamsBuilderFactoryBean.getKafkaStreams();
-    if (kafkaStreams == null || type == null) {
+    if (kafkaStreams == null || valueType == null) {
       throw new RuntimeException("fail to getReadOnlyStore");
     }
-    ReadOnlyKeyValueStore<String, CommonMessage<V>> readOnlyKeyValueStore = kafkaStreams
+    ReadOnlyKeyValueStore<String, Message<V>> readOnlyKeyValueStore = kafkaStreams
         .store(StoreQueryParameters
-            .<ReadOnlyKeyValueStore<String, CommonMessage<V>>>fromNameAndType(storeName, QueryableStoreTypes.keyValueStore())
+            .<ReadOnlyKeyValueStore<String, Message<V>>>fromNameAndType(storeName, QueryableStoreTypes.keyValueStore())
             .enableStaleStores());
     this.readOnlyStoreMap.put(storeName, readOnlyKeyValueStore);
     return readOnlyKeyValueStore;
