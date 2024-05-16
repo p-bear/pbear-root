@@ -7,14 +7,14 @@ import com.pbear.starter.kafka.message.common.DeseiralizerProvider;
 import com.pbear.starter.kafka.message.streams.StreamsHelper;
 import com.pbear.subway.business.common.seoulopenapi.dto.ResSubwayStationMaster;
 import com.pbear.subway.business.common.topic.SubwayTopic;
-import org.apache.kafka.streams.kstream.GlobalKTable;
+import org.apache.kafka.streams.kstream.KTable;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class StationTable {
   @Bean
-  public GlobalKTable<String, Message<ResSubwayStationMaster.Station>> dataStationsTable(
+  public KTable<String, Message<ResSubwayStationMaster.Station>> dataStationsTable(
       final StreamsHelper streamsHelper,
       final DeseiralizerProvider deseiralizerProvider) {
     return streamsHelper.createMessageKTable(

@@ -11,6 +11,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ReqCollectStationStatistic {
+  private String targetDate;
   @JsonInclude(JsonInclude.Include.NON_NULL)
   private Boolean isForce;
 }

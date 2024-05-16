@@ -7,7 +7,7 @@ import com.pbear.starter.kafka.message.common.MessageTopic;
 import lombok.RequiredArgsConstructor;
 import org.apache.kafka.common.utils.Bytes;
 import org.apache.kafka.streams.StreamsBuilder;
-import org.apache.kafka.streams.kstream.GlobalKTable;
+import org.apache.kafka.streams.kstream.KTable;
 import org.apache.kafka.streams.kstream.Materialized;
 import org.apache.kafka.streams.state.KeyValueStore;
 import org.apache.kafka.streams.state.Stores;
@@ -29,15 +29,14 @@ public class StreamsHelper {
             Stores.keyValueStoreBuilder(
                 Stores.inMemoryKeyValueStore(topic.getStoreName(messageType)),
                 topic.createKeySerdes(),
-                topic.createValueSerdes(deserializer))
-        );
+                topic.createValueSerdes(deserializer)));
   }
 
-  public <V> GlobalKTable<String, Message<V>> createMessageKTable(final MessageType messageType,
-                                                                        final MessageTopic topic,
-                                                                        final MessageDeserializer<V> deserializer) {
+  public <V> KTable<String, Message<V>> createMessageKTable(final MessageType messageType,
+                                                                  final MessageTopic topic,
+                                                                  final MessageDeserializer<V> deserializer) {
     return this.streamsBuilder
-        .globalTable(
+        .table(
             topic.getFullTopic(messageType),
             Materialized
                 .<String, Message<V>, KeyValueStore<Bytes, byte[]>>as(topic.getStoreName(messageType))

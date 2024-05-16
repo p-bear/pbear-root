@@ -13,7 +13,9 @@ public class KTableRouter {
   public RouterFunction<ServerResponse> routeKTable(final KTableDataHandler kTableDataHandler) {
     return RouterFunctions.route()
         .GET("/stations", kTableDataHandler::handleGetStations)
+        .POST("/stations", kTableDataHandler::handlePostStations)
         .GET("/stations/statistics", kTableDataHandler::handleGetStatistics)
+        .POST("/stations/statistics", kTableDataHandler::handlePostStatistics)
         .build();
   }
 }
