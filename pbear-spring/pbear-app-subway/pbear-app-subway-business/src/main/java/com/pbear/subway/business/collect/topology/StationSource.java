@@ -29,7 +29,7 @@ import java.util.Properties;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class CollectStation implements SubTopology {
+public class StationSource implements SubTopology {
   private final KafkaMessageReceiverProvider kafkaMessageReceiverProvider;
   private final KafkaMessagePublisher kafkaMessagePublisher;
   private final SeoulSubwayService seoulSubwayService;
