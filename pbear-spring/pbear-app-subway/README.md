@@ -32,6 +32,23 @@
 - ksqlDB를 활용한 Stream 처리
 - Websocket을 통한 DownStream 구성
 
+### Architecture
+![Architexture Image](https://github.com/p-bear/charts.draw.io/blob/main/subway/architecture.drawio.png?raw=true)
+
+- Gateway Server: API Gateway
+- Session Connector Server: Websocket Session Holder
+- BFF Server: REST API for Client
+- Business Server: Core Business
+
+
+### Topology
+
+#### Business Server Topology (Source)
+![Business Server Topology](https://github.com/p-bear/charts.draw.io/blob/main/subway/subwayTopology.drawio.png?raw=true)
+
+#### ksqlDB Topology (Processing)
+![ksqlDB Topology](https://github.com/p-bear/charts.draw.io/blob/main/subway/subwayKsqlDBTopology.drawio.png?raw=true)
+
 
 ## Technical Key Idea
 
@@ -41,7 +58,14 @@
 - 용이한 Scale-out, 고가용성 확보
 - Full Async / Non-Blocking 아키텍처 구성
 
-#### 비즈니스 구성
+#### Data Source (Collect Data)
+- Seoul OpenAPI에서 지하철 관련 정보 확보
+- Kafka Topic으로 데이터 Publish
+
+#### Data Processing with ksqlDB
+- 고수준 Interface를 통한 Stream 처리
+- 확장성 있는 구조 확보
+- 구현 및 유지보수 생산성 극대화
 
 
 ### BFF
@@ -57,7 +81,8 @@
 
 #### Benefit
 - Data를 기준으로 한 core project로 data에 대한 확장성 및 가용성을 컨트롤 할 수 있음
-- BFF에서 front와의 소통을 구성하여, front의 확장성을 가져감
+- BFF에서 front와의 소통을 구성하여, front의 확장성을 확보
+
 
 ## API Spec
 
