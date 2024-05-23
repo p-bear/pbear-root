@@ -1,9 +1,0 @@
-version = '0.0.11'
-
-bootJar {
-    enabled = true
-}
-
-dependencies {
-    implementation project(':pbear-spring:pbear-starter-kafka')
-}

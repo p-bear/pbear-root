@@ -1,0 +1,7 @@
+server:
+  port: 40200
+spring:
+  profiles:
+    active: local
+  application:
+    name: pbear-app-subway-business

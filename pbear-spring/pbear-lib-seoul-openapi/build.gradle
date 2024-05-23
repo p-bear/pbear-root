@@ -1,0 +1,11 @@
+version = '0.0.1'
+
+bootJar { enabled = false }
+
+dependencies {
+    implementation project(':pbear-spring:pbear-starter-webflux')
+}
+
+tasks.named('compileJava') {
+    it.dependsOn('clean')
+}
