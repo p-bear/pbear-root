@@ -1,4 +1,4 @@
-package com.pbear.subway.collect.data.kafka;
+package com.pbear.subway.rest.data.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
