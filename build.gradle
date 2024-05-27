@@ -3,6 +3,9 @@ import org.yaml.snakeyaml.Yaml
 buildscript {
     repositories {
         mavenCentral()
+        maven {
+            url "https://packages.confluent.io/maven/"
+        }
     }
     dependencies {
         classpath('org.yaml:snakeyaml:2.2')
@@ -44,6 +47,9 @@ subprojects {
 
     repositories {
         mavenCentral()
+        maven {
+            url "https://packages.confluent.io/maven/"
+        }
     }
 
     docker {

@@ -10,4 +10,7 @@ dependencies {
     api 'org.springframework.kafka:spring-kafka'
     api 'io.projectreactor.kafka:reactor-kafka:1.3.22+'
     api 'org.apache.kafka:kafka-streams'
+    api('io.confluent.ksql:ksqldb-api-client:7.4.5') {
+        exclude group: "org.slf4j", module: "slf4j-reload4j"
+    }
 }
