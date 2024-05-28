@@ -1,7 +1,7 @@
 package com.pbear.starter.kafka.message.send;
 
 import com.pbear.lib.event.Message;
-import com.pbear.starter.kafka.message.common.MessageTopic;
+import com.pbear.starter.kafka.message.topic.MessageTopic;
 import lombok.Builder;
 import lombok.Getter;
 import reactor.util.context.ContextView;

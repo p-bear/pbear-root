@@ -2,7 +2,7 @@ package com.pbear.starter.kafka.message.send;
 
 import com.pbear.lib.event.Message;
 import com.pbear.lib.event.MessageType;
-import com.pbear.starter.kafka.message.common.MessageTopic;
+import com.pbear.starter.kafka.message.topic.MessageTopic;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;

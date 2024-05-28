@@ -2,7 +2,7 @@ package com.pbear.starter.kafka.message.receive;
 
 import com.pbear.lib.event.Message;
 import com.pbear.lib.event.MessageType;
-import com.pbear.starter.kafka.message.common.MessageTopic;
+import com.pbear.starter.kafka.message.topic.MessageTopic;
 import lombok.Builder;
 import lombok.Getter;
 import org.apache.kafka.clients.consumer.ConsumerRecord;

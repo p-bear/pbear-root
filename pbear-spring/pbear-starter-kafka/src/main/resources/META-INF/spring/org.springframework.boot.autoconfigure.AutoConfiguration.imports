@@ -1,6 +1,7 @@
 com.pbear.starter.kafka.KafkaPropProvider
 
 com.pbear.starter.kafka.ksqldb.KsqlDBClientConfig
+com.pbear.starter.kafka.ksqldb.reactive.ReactiveKsqlDBClient
 
 com.pbear.starter.kafka.message.common.DeseiralizerProvider
 

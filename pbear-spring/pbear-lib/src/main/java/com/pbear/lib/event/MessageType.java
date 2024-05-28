@@ -8,8 +8,9 @@ import lombok.Getter;
 public enum MessageType {
   REQUEST("request."),
   DATA("data."),
-  FACT_EVENT("event."),
-  DELTA_EVENT("event.");
+  FACT_EVENT("event.fact"),
+  DELTA_EVENT("event.delta"),
+  BYPASS("bypass.");
 
   private final String prefix;
 }

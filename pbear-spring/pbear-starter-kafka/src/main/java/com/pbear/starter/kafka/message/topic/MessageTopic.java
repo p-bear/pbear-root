@@ -1,7 +1,8 @@
-package com.pbear.starter.kafka.message.common;
+package com.pbear.starter.kafka.message.topic;
 
 import com.pbear.lib.event.Message;
 import com.pbear.lib.event.MessageType;
+import com.pbear.starter.kafka.message.common.MessageDeserializer;
 import org.apache.kafka.common.serialization.Serde;
 import org.apache.kafka.common.serialization.Serdes;
 import org.springframework.kafka.support.serializer.JsonSerializer;

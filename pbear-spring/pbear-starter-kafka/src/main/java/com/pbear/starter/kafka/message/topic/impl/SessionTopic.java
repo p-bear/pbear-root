@@ -1,13 +1,12 @@
-package com.pbear.subway.topic;
+package com.pbear.starter.kafka.message.topic.impl;
 
 import com.pbear.lib.event.MessageType;
 import com.pbear.starter.kafka.message.topic.MessageTopic;
 import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
-public enum SubwayTopic implements MessageTopic {
-  STATIONS("subway.stations"),
-  STATIONS_STATISTICS("subway.stations.statistics");
+public enum SessionTopic implements MessageTopic {
+  WEBSOCKET("session.websocket");
 
   private final String topic;
 
