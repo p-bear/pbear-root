@@ -1,0 +1,7 @@
+server:
+  port: 40100
+spring:
+  profiles:
+    active: local
+  application:
+    name: pbear-app-session-connector

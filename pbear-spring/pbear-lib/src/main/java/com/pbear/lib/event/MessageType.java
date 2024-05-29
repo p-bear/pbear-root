@@ -9,8 +9,7 @@ public enum MessageType {
   REQUEST("request."),
   DATA("data."),
   FACT_EVENT("event.fact"),
-  DELTA_EVENT("event.delta"),
-  BYPASS("bypass.");
+  DELTA_EVENT("event.delta");
 
   private final String prefix;
 }

@@ -6,7 +6,8 @@ import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
 public enum SessionTopic implements MessageTopic {
-  WEBSOCKET("session.websocket");
+  WEBSOCKET("session.websocket"),
+  WEBSOCKET_MESSAGE("session.websocket.message"),;
 
   private final String topic;
 

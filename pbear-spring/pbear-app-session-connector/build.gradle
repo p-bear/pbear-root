@@ -1,0 +1,11 @@
+version = '0.0.1'
+
+bootJar {
+    enabled = true
+}
+
+dependencies {
+    implementation project(':pbear-spring:pbear-starter-kafka')
+
+    implementation 'org.springframework.boot:spring-boot-starter-websocket'
+}

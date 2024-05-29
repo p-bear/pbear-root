@@ -13,6 +13,7 @@ include 'pbear-spring:pbear-app-subway'
 include 'pbear-spring:pbear-app-gateway'
 include 'pbear-spring:pbear-app-oauth'
 include 'pbear-spring:pbear-app-user'
+include 'pbear-spring:pbear-app-session-connector'
 
 include 'pbear-spring:pbear-lib-seoul-openapi'
 
