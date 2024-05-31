@@ -17,9 +17,12 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.PingMessage;
 import org.springframework.web.socket.PongMessage;
@@ -27,6 +30,7 @@ import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.AbstractWebSocketHandler;
+import org.springframework.web.util.UriComponentsBuilder;
 import reactor.core.Disposable;
 import reactor.core.publisher.Mono;
 import reactor.core.publisher.Sinks;
@@ -36,8 +40,13 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.URI;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Properties;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Component
 @RequiredArgsConstructor
@@ -57,10 +66,14 @@ public class MessageWebSocketHandler extends AbstractWebSocketHandler implements
 
   @Override
   public void start() {
+    Properties consumerProperties = new Properties();
+    consumerProperties.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "latest");
+
     this.kafkaMessageReceiverProvider.executeReceiver(
         KafkaReceiverConfig.<String, Object>builder()
             .messageType(MessageType.DATA)
             .topic(SessionTopic.WEBSOCKET_MESSAGE)
+            .additionalProperties(consumerProperties)
             .groupId(WEBSOCKET_MESSAGE_GROUP_ID)
             .handlerName("webSocketMessageHandler")
             .messageDeserializer(new MessageDeserializer<>(objectMapper, new TypeReference<>() {}))
@@ -156,17 +169,32 @@ public class MessageWebSocketHandler extends AbstractWebSocketHandler implements
   @ToString
   public static class WebsocketSessionData {
     private final String id;
+    private final Set<String> tags;
     private final URI uri;
+    private final HttpHeaders headers;
+    MultiValueMap<String, String> parameters;
     private final Map<String, Object> attributes;
     private final InetSocketAddress localAddress;
     private final InetSocketAddress remoteAddress;
 
+    @SuppressWarnings("all")
     public WebsocketSessionData(final WebSocketSession webSocketSession) {
       this.id = webSocketSession.getId();
       this.uri = webSocketSession.getUri();
       this.attributes = webSocketSession.getAttributes();
+      this.headers = webSocketSession.getHandshakeHeaders();
+      this.parameters =
+          UriComponentsBuilder.fromUri(Objects.requireNonNull(webSocketSession.getUri())).build().getQueryParams();
       this.localAddress = webSocketSession.getLocalAddress();
       this.remoteAddress = webSocketSession.getRemoteAddress();
+      this.tags = this.collectTags();
+    }
+
+    private Set<String> collectTags() {
+      return Stream.concat(this.headers.entrySet().stream(), this.parameters.entrySet().stream())
+          .filter(entry -> entry.getKey().equalsIgnoreCase("tag"))
+          .flatMap(entry -> entry.getValue().stream())
+          .collect(Collectors.toSet());
     }
   }
 }
