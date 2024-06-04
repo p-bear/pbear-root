@@ -1,8 +1,8 @@
-package com.pbear.sessionconnector.route;
+package com.pbear.sessionconnector.listener;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.pbear.sessionconnector.data.WebsocketEvent;
+import com.pbear.sessionconnector.data.JsonMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
@@ -16,15 +16,17 @@ import java.util.Map;
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public class SessionRouter {
+public class SessionListener {
   private final ObjectMapper objectMapper;
 
-  @EventListener(condition = "#websocketEvent.route == 'get.session'")
+  @EventListener(condition = "#jsonMessage.route == 'get.session'")
   @Async
-  public void getSession(final WebsocketEvent websocketEvent) throws IOException {
+  public void getSession(final JsonMessage jsonMessage) throws IOException {
     TextMessage textMessage = this.toTextMessage(Map.of(
-        "sessionId", websocketEvent.getWebSocketSession().getId()));
-    websocketEvent.getWebSocketSession().sendMessage(textMessage);
+        "route", jsonMessage.getRoute() != null ? jsonMessage.getRoute() : "",
+        "messageId", jsonMessage.getMessageId() != null ? jsonMessage.getMessageId() : "",
+        "sessionId", jsonMessage.getWebSocketSession().getId()));
+    jsonMessage.getWebSocketSession().sendMessage(textMessage);
   }
 
   private TextMessage toTextMessage(final Object body) {

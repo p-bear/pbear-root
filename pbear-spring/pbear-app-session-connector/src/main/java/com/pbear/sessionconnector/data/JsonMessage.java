@@ -6,8 +6,9 @@ import org.springframework.web.socket.WebSocketSession;
 
 @Getter
 @Setter
-public class WebsocketEvent {
+public class JsonMessage {
   private String route;
+  private String messageId;
   private Object data;
   private WebSocketSession webSocketSession;
 }

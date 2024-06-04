@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pbear.devtool.Server;
 import com.pbear.lib.event.Message;
 import com.pbear.lib.event.MessageType;
-import com.pbear.sessionconnector.data.WebsocketEvent;
+import com.pbear.sessionconnector.data.JsonMessage;
 import com.pbear.starter.kafka.message.common.MessageDeserializer;
 import com.pbear.starter.kafka.message.receive.KafkaMessageReceiverProvider;
 import com.pbear.starter.kafka.message.receive.KafkaReceiverConfig;
@@ -127,9 +127,9 @@ public class MessageWebSocketHandler extends AbstractWebSocketHandler implements
     if (message instanceof PingMessage) {
       session.sendMessage(new PongMessage());
     } else if (message instanceof TextMessage textMessage) {
-      WebsocketEvent websocketEvent = this.objectMapper.readValue(textMessage.getPayload(), WebsocketEvent.class);
-      websocketEvent.setWebSocketSession(session);
-      this.applicationEventPublisher.publishEvent(websocketEvent);
+      JsonMessage jsonMessage = this.objectMapper.readValue(textMessage.getPayload(), JsonMessage.class);
+      jsonMessage.setWebSocketSession(session);
+      this.applicationEventPublisher.publishEvent(jsonMessage);
     }
   }
 
