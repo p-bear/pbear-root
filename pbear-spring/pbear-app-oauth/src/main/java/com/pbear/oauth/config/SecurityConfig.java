@@ -34,6 +34,8 @@ public class SecurityConfig {
                 .requestMatchers(request -> request.getRequestURI().endsWith("login-page.html")).permitAll()
                 .requestMatchers(request -> request.getRequestURI().endsWith("login")).permitAll()
                 .requestMatchers(request -> request.getRequestURI().endsWith("error")).permitAll()
+                .requestMatchers(request -> request.getRequestURI().endsWith("/users/main")
+                    && request.getMethod().equalsIgnoreCase("post")).permitAll()
                 .anyRequest().authenticated()
         )
         .formLogin(formLogin -> formLogin

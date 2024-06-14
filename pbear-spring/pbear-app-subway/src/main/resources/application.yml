@@ -4,4 +4,4 @@ spring:
   profiles:
     active: local
   application:
-    name: pbear-app-subway-business
+    name: pbear-app-subway
