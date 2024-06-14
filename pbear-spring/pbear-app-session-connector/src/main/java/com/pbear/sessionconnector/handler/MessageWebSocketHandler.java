@@ -1,24 +1,16 @@
 package com.pbear.sessionconnector.handler;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.pbear.devtool.Server;
-import com.pbear.lib.event.Message;
 import com.pbear.lib.event.MessageType;
+import com.pbear.sessionconnector.data.DownStreamMessage;
 import com.pbear.sessionconnector.data.JsonMessage;
-import com.pbear.starter.kafka.message.common.MessageDeserializer;
-import com.pbear.starter.kafka.message.receive.KafkaMessageReceiverProvider;
-import com.pbear.starter.kafka.message.receive.KafkaReceiverConfig;
 import com.pbear.starter.kafka.message.send.KafkaMessagePublisher;
 import com.pbear.starter.kafka.message.topic.impl.SessionTopic;
-import com.pbear.starter.kafka.topology.SubTopology;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.kafka.clients.consumer.ConsumerConfig;
-import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
@@ -33,76 +25,40 @@ import org.springframework.web.socket.handler.AbstractWebSocketHandler;
 import org.springframework.web.util.UriComponentsBuilder;
 import reactor.core.Disposable;
 import reactor.core.publisher.Mono;
-import reactor.core.publisher.Sinks;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.URI;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Properties;
 import java.util.Set;
-import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public class MessageWebSocketHandler extends AbstractWebSocketHandler implements SubTopology {
-  private static final String WEBSOCKET_MESSAGE_GROUP_ID =
-      Server.PBEAR_APP_SESSION_CONNECTOR.getApplicationName() + UUID.randomUUID();
-
-  private final KafkaMessageReceiverProvider kafkaMessageReceiverProvider;
+public class MessageWebSocketHandler extends AbstractWebSocketHandler {
+  private final MessageDownStreamHandler messageDownStreamHandler;
   private final KafkaMessagePublisher kafkaMessagePublisher;
   private final ObjectMapper objectMapper;
   private final ApplicationEventPublisher applicationEventPublisher;
 
-  private final Sinks.Many<DownStreamMessage> messageSource =
-      Sinks.many().multicast().onBackpressureBuffer();
-  private final Map<String, Disposable> downStreams = new ConcurrentHashMap<>();
-
-  @Override
-  public void start() {
-    Properties consumerProperties = new Properties();
-    consumerProperties.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "latest");
-
-    this.kafkaMessageReceiverProvider.executeReceiver(
-        KafkaReceiverConfig.<String, Object>builder()
-            .messageType(MessageType.DATA)
-            .topic(SessionTopic.WEBSOCKET_MESSAGE)
-            .additionalProperties(consumerProperties)
-            .groupId(WEBSOCKET_MESSAGE_GROUP_ID)
-            .handlerName("webSocketMessageHandler")
-            .messageDeserializer(new MessageDeserializer<>(objectMapper, new TypeReference<>() {}))
-            .consumeMonoFunc(this::emitRecord)
-            .build())
-        .onErrorContinue((throwable, o) -> log.error("fail to execute MessageWebSocketHandler, {}", o, throwable))
-        .subscribe();
-  }
-
-  private Mono<Sinks.EmitResult> emitRecord(final ConsumerRecord<String, Message<Object>> record) {
-    return Mono.just(new DownStreamMessage(record))
-        .map(this.messageSource::tryEmitNext)
-        .filter(Sinks.EmitResult::isFailure)
-        .doOnNext(emitResult -> log.info("emit fail: {}, key: {}, data: {}", emitResult.name(), record.key(), record.value().data()));
-  }
 
   @Override
   public void afterConnectionEstablished(final WebSocketSession session) {
-    if (this.downStreams.containsKey(session.getId())) {
+    if (this.messageDownStreamHandler.hasSession(session.getId())) {
       log.info("duplicate session, sessionId: {}", session.getId());
       return;
     }
-    log.info("before subscriberCount: {}", this.messageSource.currentSubscriberCount());
-    Disposable downStream = this.messageSource.asFlux()
+    log.info("before subscriberCount: {}", this.messageDownStreamHandler.getMessageSource().currentSubscriberCount());
+    Disposable downStream = this.messageDownStreamHandler.getMessageSource().asFlux()
         .filter(downStreamMessage -> downStreamMessage.getSessionId().equals(session.getId()))
         .flatMap(downStreamMessage -> this.sendMessage(session, downStreamMessage))
         .subscribe();
     log.info("add new Session, id: {}", session.getId());
-    log.info("after subscriberCount: {}", this.messageSource.currentSubscriberCount());
-    this.downStreams.put(session.getId(), downStream);
+    log.info("after subscriberCount: {}", this.messageDownStreamHandler.getMessageSource().currentSubscriberCount());
+    this.messageDownStreamHandler.putSessionDownStream(session.getId(), downStream);
     this.kafkaMessagePublisher.publish(MessageType.DATA, SessionTopic.WEBSOCKET, session.getId(), new WebsocketSessionData(session))
         .subscribe();
   }
@@ -145,24 +101,12 @@ public class MessageWebSocketHandler extends AbstractWebSocketHandler implements
   }
 
   private void handleSessionFinish(final WebSocketSession session) {
-    if (this.downStreams.containsKey(session.getId())) {
-      this.downStreams.get(session.getId()).dispose();
-      this.downStreams.remove(session.getId());
-    }
+    this.messageDownStreamHandler.removeSessionDownStream(session.getId());
     this.kafkaMessagePublisher.publish(MessageType.DATA, SessionTopic.WEBSOCKET, session.getId(), null)
         .subscribe();
   }
 
-  @Getter
-  private static class DownStreamMessage {
-    private final String sessionId;
-    private final Message<Object> message;
 
-    public DownStreamMessage(final ConsumerRecord<String, Message<Object>> record) {
-      this.sessionId = record.key();
-      this.message = record.value();
-    }
-  }
 
   @Getter
   @ToString
