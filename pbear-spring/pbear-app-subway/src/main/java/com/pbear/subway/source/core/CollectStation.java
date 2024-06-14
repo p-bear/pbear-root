@@ -1,4 +1,4 @@
-package com.pbear.subway.source;
+package com.pbear.subway.source.core;
 
 import com.pbear.lib.event.MessageType;
 import com.pbear.lib.seoul.SeoulOpenApiClient;

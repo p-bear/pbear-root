@@ -1,9 +1,8 @@
-package com.pbear.subway.rest.handler;
+package com.pbear.subway.source.rest;
 
 import com.pbear.starter.webflux.data.dto.CommonRestResponse;
-import com.pbear.subway.rest.data.dto.ReqCollectStationStatistic;
-import com.pbear.subway.source.CollectStation;
-import com.pbear.subway.source.CollectStationStatistics;
+import com.pbear.subway.source.core.CollectStation;
+import com.pbear.subway.source.core.CollectStationStatistics;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.server.ServerRequest;

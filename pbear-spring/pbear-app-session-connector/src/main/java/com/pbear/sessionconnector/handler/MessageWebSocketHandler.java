@@ -34,7 +34,6 @@ import org.springframework.web.util.UriComponentsBuilder;
 import reactor.core.Disposable;
 import reactor.core.publisher.Mono;
 import reactor.core.publisher.Sinks;
-import reactor.core.scheduler.Schedulers;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -86,8 +85,8 @@ public class MessageWebSocketHandler extends AbstractWebSocketHandler implements
   private Mono<Sinks.EmitResult> emitRecord(final ConsumerRecord<String, Message<Object>> record) {
     return Mono.just(new DownStreamMessage(record))
         .map(this.messageSource::tryEmitNext)
-        .doOnNext(emitResult -> log.info("emit success? {}, key: {}, data: {}",
-            emitResult.isSuccess(), record.key(), record.value().data()));
+        .filter(Sinks.EmitResult::isFailure)
+        .doOnNext(emitResult -> log.info("emit fail: {}, key: {}, data: {}", emitResult.name(), record.key(), record.value().data()));
   }
 
   @Override
@@ -96,13 +95,13 @@ public class MessageWebSocketHandler extends AbstractWebSocketHandler implements
       log.info("duplicate session, sessionId: {}", session.getId());
       return;
     }
-    log.info("current subscriberCount: {}", this.messageSource.currentSubscriberCount());
+    log.info("before subscriberCount: {}", this.messageSource.currentSubscriberCount());
     Disposable downStream = this.messageSource.asFlux()
         .filter(downStreamMessage -> downStreamMessage.getSessionId().equals(session.getId()))
         .flatMap(downStreamMessage -> this.sendMessage(session, downStreamMessage))
-        .subscribeOn(Schedulers.boundedElastic())
         .subscribe();
     log.info("add new Session, id: {}", session.getId());
+    log.info("after subscriberCount: {}", this.messageSource.currentSubscriberCount());
     this.downStreams.put(session.getId(), downStream);
     this.kafkaMessagePublisher.publish(MessageType.DATA, SessionTopic.WEBSOCKET, session.getId(), new WebsocketSessionData(session))
         .subscribe();

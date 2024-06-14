@@ -79,11 +79,13 @@
 ```
 pbear-root
 ├──pbear-spring
-│   ├──pbear-app-asset          # Asset Management Service (Readme 참고)
+│   ├──pbear-app-asset          # Development Halted
 │   │   ├──pbear-app-asset-bff
 │   │   └──pbear-app-asset-business
 │   ├──pbear-app-gateway        # API Gateway Server Application
 │   ├──pbear-app-oauth          # OAuth Server Application
+│   ├──pbear-app-session-connector  # Session Server Application
+│   ├──pbear-app-subway         # Server Application for Seubway Data (Seoul OpenAPI)
 │   ├──pbear-app-user           # User Server Application
 │   ... (to be continue)
 │   │

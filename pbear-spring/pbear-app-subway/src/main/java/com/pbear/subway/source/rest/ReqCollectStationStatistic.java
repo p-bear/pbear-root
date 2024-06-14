@@ -1,4 +1,4 @@
-package com.pbear.subway.rest.data.dto;
+package com.pbear.subway.source.rest;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
