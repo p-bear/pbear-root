@@ -1,0 +1,7 @@
+server:
+  port: 40300
+spring:
+  profiles:
+    active: local
+  application:
+    name: pbear-app-toolbox
