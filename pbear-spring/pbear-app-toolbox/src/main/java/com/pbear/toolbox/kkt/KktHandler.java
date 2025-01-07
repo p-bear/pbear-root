@@ -85,6 +85,6 @@ public class KktHandler {
       builder.append(line);
     }
 
-    return builder.substring(2);
+    return builder.toString();
   }
 }
