@@ -45,7 +45,10 @@ public class KktHandler {
         .map(this::toCsvKkt)
         .flatMap(content -> ServerResponse.ok()
             .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"kkt_"
-                + new SimpleDateFormat("yyyyMMdd_HHmm").format(new Date()) + ".csv\"")
+                + new SimpleDateFormat("yyyyMMdd_HHmm").format(new Date())
+                + "."
+                + serverRequest.queryParam("ext").orElse("txt")
+                + "\"")
             .contentType(MediaType.APPLICATION_OCTET_STREAM)
             .bodyValue(content));
   }
