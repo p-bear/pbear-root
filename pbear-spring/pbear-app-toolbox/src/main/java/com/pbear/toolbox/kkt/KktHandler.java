@@ -108,7 +108,11 @@ public class KktHandler {
   private String toCsvKkt(final String content) {
     return Arrays.stream(content.replaceAll("\\r", "").split("\\n"))
         .map(String::trim)
-        .filter(String::isEmpty)
+        .reduce((s1, s2) -> s1 + (s2.startsWith("202") ? "\n" : " ") + s2)
+        .stream()
+        .flatMap(formattedContent -> Arrays.stream(formattedContent.split("\\n")))
+        .map(String::trim)
+        .filter(line -> !line.isEmpty())
         .map(this::toKktData)
         .filter(Objects::nonNull)
         .map(KktData::toString)
@@ -127,7 +131,7 @@ public class KktHandler {
       time = ZonedDateTime.parse(
           parts[0],
           DateTimeFormatter
-              .ofPattern("yyyy년 M월 d일 a H:mm")
+              .ofPattern("yyyy년 M월 d일 a h:mm")
               .withLocale(Locale.KOREAN)
               .withZone(ZoneId.systemDefault())
       );
