@@ -14,7 +14,13 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.text.SimpleDateFormat;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.Locale;
+import java.util.Objects;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -29,6 +35,17 @@ public class KktHandler {
         .map(this::minifyKkt)
         .flatMap(content -> ServerResponse.ok()
             .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"kkt_" + new SimpleDateFormat("yyyyMMdd_HHmm").format(new Date()) + ".txt\"")
+            .contentType(MediaType.APPLICATION_OCTET_STREAM)
+            .bodyValue(content));
+  }
+
+  public Mono<ServerResponse> handlePostCsv(final ServerRequest serverRequest) {
+    return serverRequest.multipartData()
+        .flatMap(this::extractKktContent)
+        .map(this::toCsvKkt)
+        .flatMap(content -> ServerResponse.ok()
+            .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"kkt_"
+                + new SimpleDateFormat("yyyyMMdd_HHmm").format(new Date()) + ".csv\"")
             .contentType(MediaType.APPLICATION_OCTET_STREAM)
             .bodyValue(content));
   }
@@ -86,5 +103,69 @@ public class KktHandler {
     }
 
     return builder.toString();
+  }
+
+  private String toCsvKkt(final String content) {
+    return Arrays.stream(content.replaceAll("\\r", "").split("\\n"))
+        .map(String::trim)
+        .filter(String::isEmpty)
+        .map(this::toKktData)
+        .filter(Objects::nonNull)
+        .map(KktData::toString)
+        .collect(Collectors.joining(System.lineSeparator()));
+  }
+
+  private KktData toKktData(final String line) {
+    if (!line.contains(",")) {
+      return null;
+    }
+
+    String[] parts = line.split(",");
+
+    ZonedDateTime time;
+    try {
+      time = ZonedDateTime.parse(
+          parts[0],
+          DateTimeFormatter
+              .ofPattern("yyyy년 M월 d일 a H:mm")
+              .withLocale(Locale.KOREAN)
+              .withZone(ZoneId.systemDefault())
+      );
+    } catch (Exception e) {
+      return null;
+    }
+
+    String secondPart = Arrays.stream(parts)
+        .skip(1)
+        .collect(Collectors.joining(" "));
+    if (!secondPart.contains(":")) {
+      return null;
+    }
+
+    String[] splitedSecondPart = secondPart.split(":");
+
+    String speaker = splitedSecondPart[0].trim();
+
+    String message = Arrays.stream(splitedSecondPart)
+        .skip(1)
+        .map(String::trim)
+        .collect(Collectors.joining(" "));
+
+    return new KktData(time, speaker, message);
+  }
+
+  private record KktData(
+      ZonedDateTime time,
+      String speaker,
+      String message
+  ) {
+    @Override
+    public String toString() {
+      return time.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
+          + ","
+          + speaker
+          + ","
+          + message;
+    }
   }
 }

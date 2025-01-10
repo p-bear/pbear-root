@@ -12,6 +12,7 @@ public class KktRouter {
   public RouterFunction<ServerResponse> kktRoute(final KktHandler kktHandler) {
     return RouterFunctions.route()
         .POST("/kkt/mini", kktHandler::handlePostMini)
+        .POST("/kkt/csv", kktHandler::handlePostCsv)
         .build();
   }
 }
