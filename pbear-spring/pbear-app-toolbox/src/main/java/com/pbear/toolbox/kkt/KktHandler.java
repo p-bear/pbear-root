@@ -43,14 +43,19 @@ public class KktHandler {
     return serverRequest.multipartData()
         .flatMap(this::extractKktContent)
         .map(this::toCsvKkt)
+        .map(content -> "\uFEFF"
+            + "t,p,m"
+            + System.lineSeparator()
+            + content)
         .flatMap(content -> ServerResponse.ok()
             .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"kkt_"
                 + new SimpleDateFormat("yyyyMMdd_HHmm").format(new Date())
                 + "."
-                + serverRequest.queryParam("ext").orElse("txt")
+                + serverRequest.queryParam("ext").orElse("csv")
                 + "\"")
             .contentType(MediaType.APPLICATION_OCTET_STREAM)
-            .bodyValue(content));
+            // for UTF-8 BOM
+            .bodyValue("\uFEFF" + content));
   }
 
   private Mono<String> extractKktContent(final MultiValueMap<String, Part> multipartForm) {
