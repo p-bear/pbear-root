@@ -12,6 +12,7 @@ public class KktRouter {
   public RouterFunction<ServerResponse> kktRoute(final KktHandler kktHandler) {
     return RouterFunctions.route()
         .POST("/kkt", kktHandler::handlePostKkt)
+        .DELETE("/kkt/{name}", kktHandler::handleDeleteKkt)
         .GET("/kkt", kktHandler::handleGetKkt)
         .GET("/kkt/{name}/csv", kktHandler::handleGetKktCsvWithName)
         .GET("/kkt/{name}/json", kktHandler::handleGetKktJsonWithName)

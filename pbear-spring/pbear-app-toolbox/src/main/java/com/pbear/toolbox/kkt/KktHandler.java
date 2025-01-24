@@ -51,6 +51,12 @@ public class KktHandler {
         .flatMap(result -> ServerResponse.ok().bodyValue(Map.of("id", result.getId())));
   }
 
+  public Mono<ServerResponse> handleDeleteKkt(final ServerRequest serverRequest) {
+    return Mono.just(serverRequest.pathVariable("name"))
+        .flatMap(this.kktSourceDataRepository::deleteAllByName)
+        .then(ServerResponse.ok().build());
+  }
+
   public Mono<ServerResponse> handleGetKkt(final ServerRequest serverRequest) {
     return this.kktSourceDataRepository.findAll()
         .map(kktSourceData -> Map.of(
