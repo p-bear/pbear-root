@@ -1,4 +1,4 @@
-version = '0.0.6'
+version = '0.0.7'
 
 bootJar {
     enabled = true
@@ -6,4 +6,5 @@ bootJar {
 
 dependencies {
     implementation project(':pbear-spring:pbear-starter-webflux')
+    implementation project(':pbear-spring:pbear-starter-mongodb')
 }

@@ -1,7 +1,13 @@
 package com.pbear.toolbox.kkt;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.pbear.starter.webflux.data.exception.RestException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.buffer.DataBufferUtils;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.http.codec.multipart.FormFieldPart;
@@ -20,13 +26,76 @@ import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Objects;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Component
+@RequiredArgsConstructor
 public class KktHandler {
   private static final String DATE_PATTERN = "\\d{4}년 \\d{1,2}월 \\d{1,2}일 [ㄱ-ㅣ가-힣]{2} \\d{1,2}:\\d{1,2}";
+
+  private final KktSourceDataRepository kktSourceDataRepository;
+  private final ObjectMapper objectMapper;
+
+  public Mono<ServerResponse> handlePostKkt(final ServerRequest serverRequest) {
+    return serverRequest.multipartData()
+        .flatMap(this::extractKktContent)
+        .map(content -> KktSourceData.builder()
+            .name("kkt_" + new SimpleDateFormat("yyyyMMdd_HHmm").format(new Date()))
+            .content(content)
+            .build())
+        .flatMap(this.kktSourceDataRepository::save)
+        .flatMap(result -> ServerResponse.ok().bodyValue(Map.of("id", result.getId())));
+  }
+
+  public Mono<ServerResponse> handleGetKkt(final ServerRequest serverRequest) {
+    return this.kktSourceDataRepository.findAll()
+        .map(kktSourceData -> Map.of(
+            "name", kktSourceData.getName(),
+            "timestamp", kktSourceData.getId().getTimestamp()))
+        .collectList()
+        .flatMap(dtoList -> ServerResponse.ok()
+            .bodyValue(Map.of("kktList", dtoList)));
+  }
+
+  public Mono<ServerResponse> handleGetKktCsvWithName(final ServerRequest serverRequest) {
+    return Mono.just(serverRequest.pathVariable("name"))
+        .flatMapMany(this.kktSourceDataRepository::findByName)
+        .next()
+        .map(KktSourceData::getContent)
+        .map(this::toCsvKkt)
+        .flatMap(content -> ServerResponse.ok()
+            .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"kkt_"
+                + new SimpleDateFormat("yyyyMMdd_HHmm").format(new Date())
+                + ".csv\"")
+            .contentType(MediaType.APPLICATION_OCTET_STREAM)
+            .bodyValue(content))
+        .switchIfEmpty(ServerResponse.status(HttpStatus.NO_CONTENT).build());
+  }
+
+  public Mono<ServerResponse> handleGetKktJsonWithName(final ServerRequest serverRequest) {
+    return Mono.just(serverRequest.pathVariable("name"))
+        .flatMapMany(this.kktSourceDataRepository::findByName)
+        .next()
+        .map(KktSourceData::getContent)
+        .flatMap(content -> {
+          try {
+            return Mono.just(this.objectMapper.writeValueAsString(this.toKktDataStream(content).toList()));
+          } catch (JsonProcessingException e) {
+            return Mono.error(new RestException(HttpStatusCode.valueOf(500), "500"));
+          }
+        })
+        .flatMap(resBody -> ServerResponse.ok()
+            .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"kkt_"
+                + new SimpleDateFormat("yyyyMMdd_HHmm").format(new Date())
+                + ".json\"")
+            .contentType(MediaType.APPLICATION_OCTET_STREAM)
+            .bodyValue(resBody))
+        .switchIfEmpty(ServerResponse.status(HttpStatus.NO_CONTENT).build());
+  }
 
   public Mono<ServerResponse> handlePostMini(final ServerRequest serverRequest) {
 
@@ -43,10 +112,6 @@ public class KktHandler {
     return serverRequest.multipartData()
         .flatMap(this::extractKktContent)
         .map(this::toCsvKkt)
-        .map(content -> "\uFEFF"
-            + "t,p,m"
-            + System.lineSeparator()
-            + content)
         .flatMap(content -> ServerResponse.ok()
             .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"kkt_"
                 + new SimpleDateFormat("yyyyMMdd_HHmm").format(new Date())
@@ -54,8 +119,7 @@ public class KktHandler {
                 + serverRequest.queryParam("ext").orElse("csv")
                 + "\"")
             .contentType(MediaType.APPLICATION_OCTET_STREAM)
-            // for UTF-8 BOM
-            .bodyValue("\uFEFF" + content));
+            .bodyValue(content));
   }
 
   private Mono<String> extractKktContent(final MultiValueMap<String, Part> multipartForm) {
@@ -114,6 +178,15 @@ public class KktHandler {
   }
 
   private String toCsvKkt(final String content) {
+    return "\uFEFF" // for UTF-8 BOM
+        + "t,p,m"
+        + System.lineSeparator()
+        + this.toKktDataStream(content)
+        .map(KktData::toString)
+        .collect(Collectors.joining(System.lineSeparator()));
+  }
+
+  private Stream<KktData> toKktDataStream(final String content) {
     return Arrays.stream(content.replaceAll("\\r", "").split("\\n"))
         .map(String::trim)
         .reduce((s1, s2) -> s1 + (s2.startsWith("202") ? "\n" : " ") + s2)
@@ -122,9 +195,7 @@ public class KktHandler {
         .map(String::trim)
         .filter(line -> !line.isEmpty())
         .map(this::toKktData)
-        .filter(Objects::nonNull)
-        .map(KktData::toString)
-        .collect(Collectors.joining(System.lineSeparator()));
+        .filter(Objects::nonNull);
   }
 
   private KktData toKktData(final String line) {

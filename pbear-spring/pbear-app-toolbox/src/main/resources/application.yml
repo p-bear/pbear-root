@@ -5,3 +5,6 @@ spring:
     active: local
   application:
     name: pbear-app-toolbox
+  data:
+    mongodb:
+      database: toolbox

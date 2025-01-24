@@ -11,6 +11,10 @@ public class KktRouter {
   @Bean
   public RouterFunction<ServerResponse> kktRoute(final KktHandler kktHandler) {
     return RouterFunctions.route()
+        .POST("/kkt", kktHandler::handlePostKkt)
+        .GET("/kkt", kktHandler::handleGetKkt)
+        .GET("/kkt/{name}/csv", kktHandler::handleGetKktCsvWithName)
+        .GET("/kkt/{name}/json", kktHandler::handleGetKktJsonWithName)
         .POST("/kkt/mini", kktHandler::handlePostMini)
         .POST("/kkt/csv", kktHandler::handlePostCsv)
         .build();
