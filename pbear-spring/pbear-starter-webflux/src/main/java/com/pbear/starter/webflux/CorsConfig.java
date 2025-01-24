@@ -13,11 +13,16 @@ public class CorsConfig {
   public CorsWebFilter corsWebFilter() {
     CorsConfiguration corsConfig = new CorsConfiguration();
     corsConfig.addAllowedOrigin("*");
-    corsConfig.setMaxAge(8000L);
+    corsConfig.addAllowedHeader("*");
+
     corsConfig.addAllowedMethod(HttpMethod.GET);
     corsConfig.addAllowedMethod(HttpMethod.POST);
+    corsConfig.addAllowedMethod(HttpMethod.DELETE);
+    corsConfig.addAllowedMethod(HttpMethod.PUT);
+    corsConfig.addAllowedMethod(HttpMethod.HEAD);
     corsConfig.addAllowedMethod(HttpMethod.OPTIONS);
-    corsConfig.addAllowedHeader("Content-Type");
+
+    corsConfig.setMaxAge(8000L);
 
     UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
     source.registerCorsConfiguration("/**", corsConfig);
