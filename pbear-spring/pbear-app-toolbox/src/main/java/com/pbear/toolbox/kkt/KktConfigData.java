@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.TypeAlias;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -14,11 +15,12 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Document(collection = "kkt")
+@Document(collection = "kktConfig")
 @TypeAlias("KktConfigData")
 public class KktConfigData {
   @Id
-  private String id;
+  private ObjectId id;
+  private String name;
   private String prefix;
   private String suffix;
 }

@@ -18,6 +18,7 @@ import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.function.TupleUtils;
 
 import java.text.SimpleDateFormat;
 import java.time.ZoneId;
@@ -130,19 +131,23 @@ public class KktHandler {
   }
 
   public Mono<ServerResponse> handlePostKktConfig(final ServerRequest serverRequest) {
-    return serverRequest.bodyToMono(KktConfigDTO.class)
-        .map(kktConfigDTO -> KktConfigData.builder()
-            .id("only_one")
-            .prefix(kktConfigDTO.prefix())
-            .suffix(kktConfigDTO.suffix())
-            .build())
+    return serverRequest.formData()
+        .zipWith(this.kktConfigDataRepository.findByName("only_one")
+            .next()
+            .defaultIfEmpty(KktConfigData.builder().name("only_one").build()))
+        .map(TupleUtils.function((formData, kktConfigData) -> {
+          kktConfigData.setPrefix(formData.getFirst("prefix"));
+          kktConfigData.setSuffix(formData.getFirst("suffix"));
+          return kktConfigData;
+        }))
         .flatMap(this.kktConfigDataRepository::save)
         .flatMap(kktConfigData -> ServerResponse.ok().bodyValue(kktConfigData));
   }
 
   public Mono<ServerResponse> handleGetKktConfig(final ServerRequest serverRequest) {
-    return this.kktConfigDataRepository.findById("only_one")
-        .defaultIfEmpty(KktConfigData.builder().id("only_one").prefix("").suffix("").build())
+    return this.kktConfigDataRepository.findByName("only_one")
+        .next()
+        .defaultIfEmpty(KktConfigData.builder().name("only_one").prefix("").suffix("").build())
         .flatMap(kktConfigData -> ServerResponse.ok().bodyValue(kktConfigData));
   }
 
