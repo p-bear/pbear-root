@@ -18,6 +18,8 @@ public class KktRouter {
         .GET("/kkt/{name}/json", kktHandler::handleGetKktJsonWithName)
         .POST("/kkt/mini", kktHandler::handlePostMini)
         .POST("/kkt/csv", kktHandler::handlePostCsv)
+        .POST("/kkt/config", kktHandler::handlePostKktConfig)
+        .GET("/kkt/config", kktHandler::handleGetKktConfig)
         .build();
   }
 }

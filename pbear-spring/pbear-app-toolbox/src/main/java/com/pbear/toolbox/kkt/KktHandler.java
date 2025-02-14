@@ -38,6 +38,7 @@ public class KktHandler {
   private static final String DATE_PATTERN = "\\d{4}년 \\d{1,2}월 \\d{1,2}일 [ㄱ-ㅣ가-힣]{2} \\d{1,2}:\\d{1,2}";
 
   private final KktSourceDataRepository kktSourceDataRepository;
+  private final KktConfigDataRepository kktConfigDataRepository;
   private final ObjectMapper objectMapper;
 
   public Mono<ServerResponse> handlePostKkt(final ServerRequest serverRequest) {
@@ -126,6 +127,23 @@ public class KktHandler {
                 + "\"")
             .contentType(MediaType.APPLICATION_OCTET_STREAM)
             .bodyValue(content));
+  }
+
+  public Mono<ServerResponse> handlePostKktConfig(final ServerRequest serverRequest) {
+    return serverRequest.bodyToMono(KktConfigDTO.class)
+        .map(kktConfigDTO -> KktConfigData.builder()
+            .id("only_one")
+            .prefix(kktConfigDTO.prefix())
+            .suffix(kktConfigDTO.suffix())
+            .build())
+        .flatMap(this.kktConfigDataRepository::save)
+        .flatMap(kktConfigData -> ServerResponse.ok().bodyValue(kktConfigData));
+  }
+
+  public Mono<ServerResponse> handleGetKktConfig(final ServerRequest serverRequest) {
+    return this.kktConfigDataRepository.findById("only_one")
+        .defaultIfEmpty(KktConfigData.builder().id("only_one").prefix("").suffix("").build())
+        .flatMap(kktConfigData -> ServerResponse.ok().bodyValue(kktConfigData));
   }
 
   private Mono<String> extractKktContent(final MultiValueMap<String, Part> multipartForm) {
