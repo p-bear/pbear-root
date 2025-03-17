@@ -29,6 +29,7 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -46,7 +47,10 @@ public class KktHandler {
     return serverRequest.multipartData()
         .flatMap(this::extractKktContent)
         .map(content -> KktSourceData.builder()
-            .name("kkt_" + new SimpleDateFormat("yyyyMMdd_HHmm").format(new Date()))
+            .name(
+                serverRequest.queryParam("filename").orElse("kkt")
+                    + "_"
+                    + new SimpleDateFormat("yyyyMMdd_HHmm").format(new Date()))
             .content(content)
             .build())
         .flatMap(this.kktSourceDataRepository::save)
@@ -132,9 +136,12 @@ public class KktHandler {
 
   public Mono<ServerResponse> handlePostKktConfig(final ServerRequest serverRequest) {
     return serverRequest.formData()
-        .zipWith(this.kktConfigDataRepository.findByName("only_one")
-            .next()
-            .defaultIfEmpty(KktConfigData.builder().name("only_one").build()))
+        .zipWhen(formData -> {
+          final String name = Optional.ofNullable(formData.getFirst("configName")).orElse("only_one");
+          return this.kktConfigDataRepository.findByName(name)
+              .next()
+              .defaultIfEmpty(KktConfigData.builder().name(name).build());
+        })
         .map(TupleUtils.function((formData, kktConfigData) -> {
           kktConfigData.setPrefix(formData.getFirst("prefix"));
           kktConfigData.setSuffix(formData.getFirst("suffix"));
@@ -145,9 +152,10 @@ public class KktHandler {
   }
 
   public Mono<ServerResponse> handleGetKktConfig(final ServerRequest serverRequest) {
-    return this.kktConfigDataRepository.findByName("only_one")
+    final String name = serverRequest.queryParam("configName").orElse("only_one");
+    return this.kktConfigDataRepository.findByName(name)
         .next()
-        .defaultIfEmpty(KktConfigData.builder().name("only_one").prefix("").suffix("").build())
+        .defaultIfEmpty(KktConfigData.builder().name(name).prefix("").suffix("").build())
         .flatMap(kktConfigData -> ServerResponse.ok().bodyValue(kktConfigData));
   }
 
