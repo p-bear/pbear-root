@@ -1,0 +1,10 @@
+server:
+  port: 40400
+spring:
+  profiles:
+    active: local
+  application:
+    name: pbear-app-wow
+  data:
+    mongodb:
+      database: wow

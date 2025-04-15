@@ -12,6 +12,8 @@ include 'pbear-spring:pbear-app-subway'
 
 include 'pbear-spring:pbear-app-toolbox'
 
+include 'pbear-spring:pbear-app-wow'
+
 include 'pbear-spring:pbear-app-gateway'
 include 'pbear-spring:pbear-app-oauth'
 include 'pbear-spring:pbear-app-user'
