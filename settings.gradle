@@ -18,6 +18,7 @@ include 'pbear-spring:pbear-app-user'
 include 'pbear-spring:pbear-app-session-connector'
 
 include 'pbear-spring:pbear-lib-seoul-openapi'
+include 'pbear-spring:pbear-lib-notify'
 
 include 'pbear-spring:pbear-starter-kafka'
 include 'pbear-spring:pbear-starter-mongodb'
