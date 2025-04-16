@@ -1,5 +1,9 @@
 server:
   port: 40400
+  compression:
+    enabled: true
+    min-response-size: 1024
+    mime-types: text/html, text/xml, text/plain, application/json, application/javascript
 spring:
   profiles:
     active: local
@@ -8,3 +12,6 @@ spring:
   data:
     mongodb:
       database: wow
+blizzard:
+  oauth-url: https://oauth.battle.net
+  api-url: https://kr.api.blizzard.com
