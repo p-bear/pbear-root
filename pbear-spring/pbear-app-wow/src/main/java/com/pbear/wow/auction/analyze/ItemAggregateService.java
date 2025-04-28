@@ -65,7 +65,7 @@ public class ItemAggregateService {
           }
           return result.values();
         }))
-        .doOnNext(doc -> log.info("save ItemPriceHistoryDocument >> item: {} count: {}",
+        .doOnNext(doc -> log.info("save ItemPriceHistoryDocumentList >> item: {} count: {}",
             doc.stream().map(ItemPriceHistoryDocument::getId).collect(Collectors.toList()),
             doc.size()))
         .flux()
@@ -82,6 +82,7 @@ public class ItemAggregateService {
         .doOnNext(itemPriceHistoryDocument -> itemPriceHistoryDocument.addAuctionAll(
             commoditiesDocument.getCollectedDateTime(),
             groupedAuction.get(itemPriceHistoryDocument.getId())))
+        .doOnNext(doc -> log.info("save ItemPriceHistoryDocument >> item: {}", doc.getId()))
         .flatMap(this.itemPriceHistoryRepository::save);
   }
 
