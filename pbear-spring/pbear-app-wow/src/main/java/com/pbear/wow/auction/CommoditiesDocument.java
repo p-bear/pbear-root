@@ -38,6 +38,16 @@ public class CommoditiesDocument {
     this.setData(auctionsJson);
   }
 
+  public String getCollectedTime() {
+    if (this.collectedTime == null) {
+      return null;
+    }
+    if (this.collectedTime.length() == 2) {
+      return this.collectedTime + "0500";
+    }
+    return collectedTime;
+  }
+
   public void setData(final String auctionsJson) {
     try {
       byte[] compressedData = GzipUtil.compress(auctionsJson);
@@ -63,5 +73,9 @@ public class CommoditiesDocument {
       log.error("fail to decompress data", e);
       return null;
     }
+  }
+
+  public String getCollectedDateTime() {
+    return this.getCollectedDate() + "-" + this.getCollectedTime();
   }
 }

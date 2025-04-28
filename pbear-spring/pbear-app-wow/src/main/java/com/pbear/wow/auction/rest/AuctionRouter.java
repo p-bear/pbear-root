@@ -1,6 +1,5 @@
 package com.pbear.wow.auction.rest;
 
-import com.pbear.wow.auction.analyze.TargetItemHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.reactive.function.server.RouterFunction;
@@ -11,12 +10,15 @@ import org.springframework.web.reactive.function.server.ServerResponse;
 public class AuctionRouter {
   @Bean
   public RouterFunction<ServerResponse> auctionRoutes(
-      final TargetItemHandler targetItemHandler
+      final TargetHandler targetHandler,
+      final AnalyzeHandler analyzeHandler
       ) {
     return RouterFunctions.route()
-        .GET("/target/item", targetItemHandler::getTargetItem)
-        .POST("/target/item/{id}", targetItemHandler::postTargetItem)
-        .DELETE("/target/item/{id}", targetItemHandler::deleteTargetItem)
+        .GET("/target/item", targetHandler::getTargetItem)
+        .POST("/target/item/{id}", targetHandler::postTargetItem)
+        .DELETE("/target/item/{id}", targetHandler::deleteTargetItem)
+        .GET("/analyze/price/item/{itemId}", analyzeHandler::getAnalyzePriceItemItemId)
+        .POST("/analyze/price/item/refresh", analyzeHandler::postAnalyzePriceItemRefresh)
         .build();
   }
 }

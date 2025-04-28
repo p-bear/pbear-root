@@ -1,6 +1,7 @@
 package com.pbear.wow.auction;
 
 import com.pbear.lib.notify.NotifyClient;
+import com.pbear.wow.auction.analyze.ItemAggregateService;
 import com.pbear.wow.core.WowApiService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,6 +16,7 @@ public class AuctionDataCollector {
   private final WowApiService wowApiService;
   private final CommoditiesRepository commoditiesRepository;
   private final NotifyClient notifyClient;
+  private final ItemAggregateService itemAggregateService;
 
   @Scheduled(cron = "0 5 * * * *")
   public void collectWowAuctionCommoditiesData() {
@@ -26,6 +28,7 @@ public class AuctionDataCollector {
         .doOnNext(unused -> log.info("collect wow auctionCommoditiesData end"))
         .onErrorResume(throwable -> this.notifyClient.sendMessage("와우 경매장 데이터 수집 실패: " + throwable.getMessage())
             .flatMap(s -> Mono.empty()))
+        .delayUntil(this.itemAggregateService::addItemPriceHistroy)
         .subscribe();
   }
 }
