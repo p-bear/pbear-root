@@ -52,16 +52,18 @@ subprojects {
         }
     }
 
-    docker {
-        dockerCreateDockerfile.doFirst {
-            def appConfig = new Yaml().load( project.file('src/main/resources/application.yml').newInputStream() )
-            springBootApplication {
-                baseImage = 'openjdk:17'
-                ports = [appConfig.server.port, appConfig.server.port]
-                images = ["${project.name}:${project.version}", "${project.name}:latest"]
-                jvmArgs = ['-Dspring.profiles.active=release', '-Duser.timezone=Asia/Seoul', '-Xms512m', '-Xmx512m']
+    if (!project.name.equals('pbear-app-wow')) {
+        docker {
+            dockerCreateDockerfile.doFirst {
+                def appConfig = new Yaml().load( project.file('src/main/resources/application.yml').newInputStream() )
+                springBootApplication {
+                    baseImage = 'openjdk:17'
+                    ports = [appConfig.server.port, appConfig.server.port]
+                    images = ["${project.name}:${project.version}", "${project.name}:latest"]
+                    jvmArgs = ['-Dspring.profiles.active=release', '-Duser.timezone=Asia/Seoul', '-Xms512m', '-Xmx512m']
+                }
             }
+            dockerBuildImage.dependsOn('build')
         }
-        dockerBuildImage.dependsOn('build')
     }
 }

@@ -1,4 +1,6 @@
-version = '0.0.5'
+import org.yaml.snakeyaml.Yaml
+
+version = '0.0.6'
 
 bootJar {
     enabled = true
@@ -8,4 +10,17 @@ dependencies {
     implementation project(':pbear-spring:pbear-starter-webflux')
     implementation project(':pbear-spring:pbear-lib-notify')
     implementation project(':pbear-spring:pbear-starter-mongodb')
+}
+
+docker {
+    dockerCreateDockerfile.doFirst {
+        def appConfig = new Yaml().load( project.file('src/main/resources/application.yml').newInputStream() )
+        springBootApplication {
+            baseImage = 'openjdk:17'
+            ports = [appConfig.server.port, appConfig.server.port]
+            images = ["${project.name}:${project.version}", "${project.name}:latest"]
+            jvmArgs = ['-Dspring.profiles.active=release', '-Duser.timezone=Asia/Seoul', '-Xms2048m', '-Xmx2048m']
+        }
+    }
+    dockerBuildImage.dependsOn('build')
 }
