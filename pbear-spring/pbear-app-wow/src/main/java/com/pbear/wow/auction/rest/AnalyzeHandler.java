@@ -9,6 +9,8 @@ import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
 
+import java.util.Map;
+
 @Component
 @RequiredArgsConstructor
 public class AnalyzeHandler {
@@ -27,7 +29,7 @@ public class AnalyzeHandler {
         .flatMap(reqBody -> this.itemAggregateService.refreshItemPriceHistroyAll()
             .collectList())
         .flatMap(list -> ServerResponse.ok().bodyValue(CommonRestResponse.builder()
-            .data(list)
+            .data(Map.of("itemCount", list.size()))
             .build()));
   }
 }
