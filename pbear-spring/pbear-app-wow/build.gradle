@@ -1,6 +1,6 @@
 import org.yaml.snakeyaml.Yaml
 
-version = '0.0.6'
+version = '1.0.0'
 
 bootJar {
     enabled = true
@@ -19,7 +19,7 @@ docker {
             baseImage = 'openjdk:17'
             ports = [appConfig.server.port, appConfig.server.port]
             images = ["${project.name}:${project.version}", "${project.name}:latest"]
-            jvmArgs = ['-Dspring.profiles.active=release', '-Duser.timezone=Asia/Seoul', '-Xms2048m', '-Xmx2048m']
+            jvmArgs = ['-Dspring.profiles.active=release', '-Duser.timezone=Asia/Seoul', '-Xms4096m', '-Xmx4096m']
         }
     }
     dockerBuildImage.dependsOn('build')
