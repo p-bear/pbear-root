@@ -1,6 +1,6 @@
 import org.yaml.snakeyaml.Yaml
 
-version = '1.0.1'
+version = '1.0.2'
 
 bootJar {
     enabled = true

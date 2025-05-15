@@ -28,7 +28,7 @@ public class AuctionDataCollector {
         .doOnNext(unused -> log.info("collect wow auctionCommoditiesData end"))
         .onErrorResume(throwable -> this.notifyClient.sendMessage("와우 경매장 데이터 수집 실패: " + throwable.getMessage())
             .flatMap(s -> Mono.empty()))
-        .delayUntil(this.itemAggregateService::addItemPriceHistroy)
+//        .delayUntil(this.itemAggregateService::addItemPriceHistroy)
         .subscribe();
   }
 }

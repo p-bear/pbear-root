@@ -18,21 +18,24 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.channels.Channels;
 import java.util.Optional;
+import java.util.Set;
 
 @Component
 @Slf4j
 public class RequestLogFilter implements WebFilter {
+  private final Set<String> skipPathSet = Set.of("/actuator/prometheus");
+
   @Override
   public Mono<Void> filter(final ServerWebExchange exchange, final WebFilterChain chain) {
-    return chain.filter(new LoggingWebExchange(exchange));
+    return chain.filter(new LoggingWebExchange(exchange, this.skipPathSet));
   }
 
   public static class LoggingWebExchange extends ServerWebExchangeDecorator {
     private final LoggingRequestDecorator loggingRequestDecorator;
 
-    protected LoggingWebExchange(final ServerWebExchange delegate) {
+    protected LoggingWebExchange(final ServerWebExchange delegate, final Set<String> skipPathSet) {
       super(delegate);
-      this.loggingRequestDecorator = new LoggingRequestDecorator(delegate.getRequest());
+      this.loggingRequestDecorator = new LoggingRequestDecorator(delegate.getRequest(), skipPathSet);
     }
 
     @Override
@@ -43,9 +46,11 @@ public class RequestLogFilter implements WebFilter {
 
   public static class LoggingRequestDecorator extends ServerHttpRequestDecorator {
     private Flux<DataBuffer> body;
+    final Set<String> skipPathSet;
 
-    public LoggingRequestDecorator(final ServerHttpRequest delegate) {
+    public LoggingRequestDecorator(final ServerHttpRequest delegate, final Set<String> skipPathSet) {
       super(delegate);
+      this.skipPathSet = skipPathSet;
       this.init();
     }
 
@@ -57,6 +62,9 @@ public class RequestLogFilter implements WebFilter {
     @SuppressWarnings("deprecation")
     private void init() {
       String path = super.getDelegate().getURI().getPath();
+      if (skipPathSet.contains(path)) {
+        return;
+      }
       String query = super.getDelegate().getURI().getQuery();
       String method = Optional.of(super.getDelegate().getMethod()).orElse(HttpMethod.GET).name();
       String headers = super.getDelegate().getHeaders().toString();
