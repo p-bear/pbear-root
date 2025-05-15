@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Component
@@ -25,10 +26,12 @@ public class AuctionDataCollector {
         .flatMap(unused -> this.wowApiService.getAuctionsCommodities())
         .map(data -> new CommoditiesDocument(data.getAuctionsJson()))
         .flatMap(this.commoditiesRepository::save)
-        .doOnNext(unused -> log.info("collect wow auctionCommoditiesData end"))
         .onErrorResume(throwable -> this.notifyClient.sendMessage("와우 경매장 데이터 수집 실패: " + throwable.getMessage())
             .flatMap(s -> Mono.empty()))
-//        .delayUntil(this.itemAggregateService::addItemPriceHistroy)
+        .delayUntil(commoditiesDocument -> this.itemAggregateService.addCommoditiesWithAllTarget(Flux.just(commoditiesDocument)))
+        .onErrorResume(throwable -> this.notifyClient.sendMessage("와우 경매장 데이터 aggregation 실패: " + throwable.getMessage())
+            .flatMap(s -> Mono.empty()))
+        .doOnNext(unused -> log.info("collect wow auctionCommoditiesData end"))
         .subscribe();
   }
 }

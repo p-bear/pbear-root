@@ -3,19 +3,18 @@ package com.pbear.wow.auction.analyze;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pbear.wow.auction.CommoditiesDocument;
 import com.pbear.wow.auction.CommoditiesRepository;
-import com.pbear.wow.data.Auction;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.util.LinkedMultiValueMap;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-import reactor.function.TupleUtils;
 
-import java.util.HashMap;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.util.Collection;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -42,51 +41,47 @@ public class ItemAggregateService {
 
 
   // -------------------- item price history --------------------
-  public Flux<ItemPriceHistoryDocument> refreshItemPriceHistroyAll() {
+  public Flux<ItemPriceHistoryDocument> refreshItemPriceHistroy() {
+    return this.itemPriceHistoryRepository.deleteAll()
+        .thenMany(this.addCommoditiesWithAllTarget(this.commoditiesRepository.findAll()));
+  }
+
+  public Flux<ItemPriceHistoryDocument> addCommoditiesWithAllTarget(final Flux<CommoditiesDocument> commoditiesDocumentFlux) {
     return this.getAllTargetItemDocument()
         .map(TargetItemDocument::getId)
         .collectList()
-        .zipWith(this.commoditiesRepository.findAll()
-            .distinct(CommoditiesDocument::getCollectedDateTime)
-            .collectList())
-        .map(TupleUtils.function((targetItemIdList, commoditiesDocumentList) -> {
-          Map<Long, ItemPriceHistoryDocument> result = new HashMap<>();
-          for (CommoditiesDocument commoditiesDocument : commoditiesDocumentList) {
-            String dateTime = commoditiesDocument.getCollectedDateTime();
-            Map<Long, List<Auction>> groupedAuction = commoditiesDocument.getAuctions(this.objectMapper).stream()
-                .collect(Collectors.groupingBy(auction -> auction.getItem().getId()));
-            for (Long targetItemId : targetItemIdList) {
-              List<Auction> targetAuctionList = groupedAuction.get(targetItemId);
-              if (result.get(targetItemId) == null) {
-                result.put(targetItemId, new ItemPriceHistoryDocument(targetItemId, new LinkedMultiValueMap<>()));
-              }
-              result.get(targetItemId).addAuctionAll(dateTime, targetAuctionList);
-            }
-          }
-          return result.values();
-        }))
-        .doOnNext(doc -> log.info("save ItemPriceHistoryDocumentList >> item: {} count: {}",
-            doc.stream().map(ItemPriceHistoryDocument::getId).collect(Collectors.toList()),
-            doc.size()))
-        .flux()
+        .doOnNext(targetItemIds -> log.info("targetItemIds: {}", targetItemIds))
+        .flatMapMany(targetItemIds -> commoditiesDocumentFlux
+            .doOnNext(commoditiesDocument -> log.info("handle commodites >> datetime: {}", commoditiesDocument.getCollectedDateTime()))
+            .flatMap(commoditiesDocument -> this.addItemPriceHistroy(targetItemIds, commoditiesDocument)));
+  }
+
+  public Flux<ItemPriceHistoryDocument> addItemPriceHistroy(final List<Long> targetItemIds,
+                                                            final CommoditiesDocument commoditiesDocument) {
+    return Flux.just(this.toItemPriceHistoryDocument(commoditiesDocument, targetItemIds))
+        .doOnNext(itemPriceHistoryDocuments -> log.info("[addItemPriceHistroy] try save history >> count: {}", itemPriceHistoryDocuments.size()))
         .flatMap(this.itemPriceHistoryRepository::saveAll);
   }
 
-  public Flux<?> addItemPriceHistroy(final CommoditiesDocument commoditiesDocument) {
-    Map<Long, List<Auction>> groupedAuction = commoditiesDocument.getAuctions(this.objectMapper).stream()
-        .collect(Collectors.groupingBy(auction -> auction.getItem().getId()));
-    return this.targetItemRepository.findAll()
-        .map(TargetItemDocument::getId)
-        .flatMap(targetItemId -> itemPriceHistoryRepository.findById(targetItemId)
-            .defaultIfEmpty(new ItemPriceHistoryDocument(targetItemId, new LinkedMultiValueMap<>())))
-        .doOnNext(itemPriceHistoryDocument -> itemPriceHistoryDocument.addAuctionAll(
-            commoditiesDocument.getCollectedDateTime(),
-            groupedAuction.get(itemPriceHistoryDocument.getId())))
-        .doOnNext(doc -> log.info("save ItemPriceHistoryDocument >> item: {}", doc.getId()))
-        .flatMap(this.itemPriceHistoryRepository::save);
+  public Flux<ItemPriceHistoryDocument> getItemPriceHistoryById(final Long itemId) {
+    return this.itemPriceHistoryRepository.findAllByMetadata_ItemId(itemId);
   }
 
-  public Mono<ItemPriceHistoryDocument> getItemPriceHistoryById(final Long itemId) {
-    return this.itemPriceHistoryRepository.findById(itemId);
+  private List<ItemPriceHistoryDocument> toItemPriceHistoryDocument(final CommoditiesDocument commoditiesDocument,
+                                                                    final Collection<Long> targetItemIds) {
+    final Instant timestamp = LocalDateTime
+        .parse(commoditiesDocument.getCollectedDateTime(), DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss"))
+        .atZone(ZoneId.systemDefault())
+        .toInstant();
+    return commoditiesDocument
+        .getAuctions(this.objectMapper).stream()
+        .filter(auction -> targetItemIds.contains(auction.getItem().getId()))
+        .map(auction -> new ItemPriceHistoryDocument(
+            timestamp,
+            auction.getItem().getId(),
+            auction.getUnitPrice(),
+            auction.getQuantity(),
+            auction.getTimeLeft()))
+        .toList();
   }
 }

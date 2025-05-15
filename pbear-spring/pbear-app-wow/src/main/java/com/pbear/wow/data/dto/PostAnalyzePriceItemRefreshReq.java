@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public record PostAnalyzePriceItemRefreshReq(
-    List<Long> targetItemId
+    List<Long> targetItemList
 ) {
   public PostAnalyzePriceItemRefreshReq() {
     this(new ArrayList<>());

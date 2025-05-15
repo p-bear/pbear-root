@@ -1,18 +1,16 @@
 package com.pbear.wow.auction.analyze;
 
-import com.pbear.wow.data.Auction;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
+import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.TypeAlias;
 import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 
-import java.time.LocalDateTime;
-import java.util.List;
+import java.time.Instant;
 
 @Getter
 @Setter
@@ -20,25 +18,32 @@ import java.util.List;
 @AllArgsConstructor
 @Document(collection = "itemPriceHistory")
 @TypeAlias("ItemPriceHistoryDocument")
+@ToString
 public class ItemPriceHistoryDocument {
   @Id
-  private Long id;
-  private LocalDateTime lastModified = LocalDateTime.now();
-  private MultiValueMap<String, Auction> auctionMap; // <yyyyMMdd-HHmmss, auction>
+  private ObjectId id;
 
-  public ItemPriceHistoryDocument(final Long id, final MultiValueMap<String, Auction> auctionMap) {
-    this.id = id;
-    this.auctionMap = auctionMap;
+  private Instant timestamp; // timeField
+  private Meta metadata; // metaField
+
+  private Long quantity;
+  private Long unitPrice;
+  private String timeLeft;
+
+  public ItemPriceHistoryDocument(final Instant timestamp, final Long itemId, final Long unitPrice,
+                                  final Long quantity, final String timeLeft) {
+    this.timestamp = timestamp;
+    this.metadata = new Meta(itemId);
+    this.unitPrice = unitPrice;
+    this.quantity = quantity;
+    this.timeLeft = timeLeft;
   }
 
-  public void addAuctionAll(final String dateTime, final List<Auction> auction) {
-    if (dateTime == null || auction == null || auction.isEmpty()) {
-      return;
-    }
-    if (auctionMap == null) {
-      this.auctionMap = new LinkedMultiValueMap<>();
-    }
-    this.auctionMap.addAll(dateTime, auction);
-    this.lastModified = LocalDateTime.now();
+  @Getter
+  @Setter
+  @NoArgsConstructor
+  @AllArgsConstructor
+  static class Meta {
+    private Long itemId;
   }
 }

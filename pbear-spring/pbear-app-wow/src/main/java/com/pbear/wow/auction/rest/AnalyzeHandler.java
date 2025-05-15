@@ -18,6 +18,7 @@ public class AnalyzeHandler {
 
   public Mono<ServerResponse> getAnalyzePriceItemItemId(ServerRequest request) {
     return this.itemAggregateService.getItemPriceHistoryById(Long.parseLong(request.pathVariable("itemId")))
+        .collectList()
         .flatMap(itemPriceHistoryDocument -> ServerResponse.ok()
             .bodyValue(CommonRestResponse.builder()
                 .data(itemPriceHistoryDocument)
@@ -26,7 +27,7 @@ public class AnalyzeHandler {
 
   public Mono<ServerResponse> postAnalyzePriceItemRefresh(ServerRequest request) {
     return request.bodyToMono(PostAnalyzePriceItemRefreshReq.class)
-        .flatMap(reqBody -> this.itemAggregateService.refreshItemPriceHistroyAll()
+        .flatMap(reqBody -> this.itemAggregateService.refreshItemPriceHistroy()
             .collectList())
         .flatMap(list -> ServerResponse.ok().bodyValue(CommonRestResponse.builder()
             .data(Map.of("itemCount", list.size()))
