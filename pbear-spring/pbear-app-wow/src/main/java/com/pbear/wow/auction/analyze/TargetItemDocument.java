@@ -17,4 +17,5 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class TargetItemDocument {
   @Id
   private Long id;
+  private String name;
 }

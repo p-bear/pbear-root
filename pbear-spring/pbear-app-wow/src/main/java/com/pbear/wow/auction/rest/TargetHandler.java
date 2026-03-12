@@ -28,7 +28,7 @@ public class TargetHandler {
   }
 
   public Mono<ServerResponse> postTargetItem(final ServerRequest request) {
-    return Mono.just(new TargetItemDocument(Long.parseLong(request.pathVariable("id"))))
+    return request.bodyToMono(TargetItemDocument.class)
         .flatMap(this.itemAggregateService::saveTargetItemDocument)
         .flatMap(targetItem -> ServerResponse.ok()
             .bodyValue(CommonRestResponse.builder()
@@ -37,7 +37,7 @@ public class TargetHandler {
   }
 
   public Mono<ServerResponse> deleteTargetItem(final ServerRequest request) {
-    return Mono.just(new TargetItemDocument(Long.parseLong(request.pathVariable("id"))))
+    return Mono.just(new TargetItemDocument(Long.parseLong(request.pathVariable("id")), null))
         .flatMap(this.itemAggregateService::deleteTargetItemDocument)
         .flatMap(targetItem -> ServerResponse.ok().bodyValue(CommonRestResponse.builder()
             .data(targetItem)
