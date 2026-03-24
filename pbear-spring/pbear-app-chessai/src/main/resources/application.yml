@@ -1,0 +1,10 @@
+server:
+  port: 40500
+spring:
+  profiles:
+    active: local
+  application:
+    name: pbear-app-chessai
+  data:
+    mongodb:
+      database: chessai

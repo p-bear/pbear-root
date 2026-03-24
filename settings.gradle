@@ -8,6 +8,8 @@ include 'pbear-spring:pbear-app-asset'
 include 'pbear-spring:pbear-app-asset:pbear-app-asset-bff'
 include 'pbear-spring:pbear-app-asset:pbear-app-asset-business'
 
+include 'pbear-spring:pbear-app-chessai'
+
 include 'pbear-spring:pbear-app-subway'
 
 include 'pbear-spring:pbear-app-toolbox'
