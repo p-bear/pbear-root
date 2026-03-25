@@ -16,7 +16,7 @@ docker {
     dockerCreateDockerfile.doFirst {
         def appConfig = new Yaml().load( project.file('src/main/resources/application.yml').newInputStream() )
         springBootApplication {
-            baseImage = 'openjdk:17'
+            baseImage = 'eclipse-temurin:17.0.18_8-jdk'
             ports = [appConfig.server.port, appConfig.server.port]
             images = ["${project.name}:${project.version}", "${project.name}:latest"]
             jvmArgs = ['-Dspring.profiles.active=release', '-Duser.timezone=Asia/Seoul', '-Xms4096m', '-Xmx4096m']
