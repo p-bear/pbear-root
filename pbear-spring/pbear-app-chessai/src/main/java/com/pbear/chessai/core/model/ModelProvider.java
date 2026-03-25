@@ -1,5 +1,6 @@
 package com.pbear.chessai.core.model;
 
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.bson.Document;
 import org.deeplearning4j.nn.multilayer.MultiLayerNetwork;
@@ -30,9 +31,17 @@ import java.util.function.Consumer;
 @Component
 @RequiredArgsConstructor
 public class ModelProvider {
+  private static final String DEFAULT_MODEL_NAME = "pbear";
   private final Map<String, Mono<Model>> cachedModels = new ConcurrentHashMap<>();
 
   private final ReactiveGridFsTemplate gridFsTemplate;
+
+  @PostConstruct
+  public void init() {
+    // preload default
+    this.getModel(DEFAULT_MODEL_NAME)
+        .subscribe();
+  }
 
   public Mono<Model> saveModel(final String modelName, final InputStream inputStream) {
     return Mono.just(inputStream)
@@ -67,12 +76,14 @@ public class ModelProvider {
   }
 
   public Mono<Model> getModel(final String name) {
-    if (this.cachedModels.containsKey(name)) {
-      return this.cachedModels.get(name);
+    final String modelName = name == null || name.isEmpty() ? DEFAULT_MODEL_NAME : name;
+
+    if (this.cachedModels.containsKey(modelName)) {
+      return this.cachedModels.get(modelName);
     }
 
     Mono<Model> modelMono = this.gridFsTemplate
-        .findFirst(Query.query(GridFsCriteria.where("filename").is(name)))
+        .findFirst(Query.query(GridFsCriteria.where("filename").is(modelName)))
         .flatMap(gridFSFile -> gridFsTemplate.getResource(gridFSFile)
             .flatMap(ReactiveGridFsResource::getInputStream)
             .flatMap(inputStream -> {
@@ -89,7 +100,7 @@ public class ModelProvider {
               }
             })
         ).cache();
-    this.cachedModels.put(name, modelMono);
+    this.cachedModels.put(modelName, modelMono);
     return modelMono;
   }
 

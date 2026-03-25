@@ -1,4 +1,4 @@
-package com.pbear.chessai.handler;
+package com.pbear.chessai.rest.handler;
 
 import com.pbear.chessai.core.model.ModelProvider;
 import com.pbear.starter.webflux.data.dto.CommonRestResponse;

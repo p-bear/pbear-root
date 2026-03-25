@@ -1,6 +1,6 @@
-package com.pbear.chessai.router;
+package com.pbear.chessai.rest.router;
 
-import com.pbear.chessai.handler.ModelHandler;
+import com.pbear.chessai.rest.handler.ModelHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.reactive.function.server.RouterFunction;
