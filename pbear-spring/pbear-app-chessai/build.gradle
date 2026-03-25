@@ -1,4 +1,4 @@
-version = '0.0.1'
+version = '0.0.2'
 
 bootJar {
     enabled = true
@@ -7,4 +7,8 @@ bootJar {
 dependencies {
     implementation project(':pbear-spring:pbear-starter-webflux')
     implementation project(':pbear-spring:pbear-starter-mongodb')
+
+    //noinspection VulnerableLibrariesLocal
+    implementation 'org.deeplearning4j:deeplearning4j-core:1.0.0-M2.1'
+    implementation 'org.nd4j:nd4j-native-platform:1.0.0-M2.1'
 }
